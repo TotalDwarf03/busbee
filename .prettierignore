@@ -1,0 +1,6 @@
+# Ignore all subdirectories in the datasets folder
+# We do not want to format the datasets themselves
+src/datasets/**/*
+
+# Continue to format the README file in the datasets folder
+!src/datasets/README.md

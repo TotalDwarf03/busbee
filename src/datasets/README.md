@@ -28,19 +28,19 @@ service number + "_" + Suffix + "_" + Direction + "_" + Day + "_" + Variation
 
 Where:
 
-| Component   | Description                                      |
-|-------------|--------------------------------------------------|
-| service number | The bus service number (i.e., 100 or X50)     |
-| Suffix      | The bus service number suffix (if any)            |
-| Direction   | I = inbound, O = outbound, C = circular                 |
-| Day         | 1 = Weekdays, 3 = Saturday, 4 = Sunday, 5 = Bank Holidays |
-| Variation   | A letter indicating route variation (if any)      |
+| Component      | Description                                               |
+| -------------- | --------------------------------------------------------- |
+| service number | The bus service number (i.e., 100 or X50)                 |
+| Suffix         | The bus service number suffix (if any)                    |
+| Direction      | I = inbound, O = outbound, C = circular                   |
+| Day            | 1 = Weekdays, 3 = Saturday, 4 = Sunday, 5 = Bank Holidays |
+| Variation      | A letter indicating route variation (if any)              |
 
 Each of these components marries up with the timetable dataset, allowing us to link routes with their respective schedules and stopping points.
 
 The dataset is offered in a range of formats, including shapefile, KML and TAB. For this project, we have used the shapefile format due to its compatibility with QGIS. The Shapefile uses the British National Grid (EPSG:27700) coordinate reference system.
 
-The authors of this dataset provide some addition documentation for the dataset which can be found in the repository [here](./routes/BusRoutEMapsSupportingInfo.pdf).
+The authors of this dataset provide some addition documentation for the dataset which can be found in the repository: [Supporting Information](./routes/BusRoutEMapsSupportingInfo.pdf).
 
 #### Route Data Processing
 
