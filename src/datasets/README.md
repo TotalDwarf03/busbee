@@ -126,4 +126,21 @@ Each CIF file represents a different bus service (i.e. `100.CIF` for service 100
 
 #### TimeTables Data Processing
 
-TODO: Describe any data processing steps taken to prepare these datasets for use in the project.
+##### CIF to CSV Conversion
+
+The timetable data was originally provided in CIF format, which is not easily readable or usable for analysis. To make the data more accessible, the CIF files were converted to CSV format using a custom Python script.
+
+The script can be found on GitHub at the following link: [CIF to CSV Converter](https://github.com/TotalDwarf03/CIF-timetable-reader).
+
+The conversion process involved the following steps:
+
+1. Read in each CIF file.
+2. Parse the relevant information, including service details, stopping points, and timings.
+3. Write the parsed data to a CSV file, with appropriate headers for each column.
+4. Save the resulting CSV files, prefixing each file with the service number (e.g., `100_timetable.csv` for service 100).
+
+During the conversion, some additional logic was applied to filter the data:
+
+- **Filter out inactive timetables:** Only save timetables with an end date of 2099-12-31, indicating they are still active.
+
+For some of the routes, this halved the number of records in the resulting CSV files, making them more manageable for analysis.
