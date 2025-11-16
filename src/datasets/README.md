@@ -44,7 +44,35 @@ The authors of this dataset provide some addition documentation for the dataset 
 
 #### Route Data Processing
 
-TODO: Describe any data processing steps taken to prepare these datasets for use in the project.
+##### Add Service Column
+
+To facilitate easier linking between datasets, a new column named `Service` was added to the route dataset. This column extracts just the service number from the `ServiceID` field.
+
+This was accomplished using the following steps in QGIS:
+
+1. Load the `OpenData_BusRoutes_polyline.shp` into QGIS.
+2. Open the Attribute Table for the layer.
+3. Click on the Field Calculator button to open the Field Calculator dialog.
+4. In the Field Calculator dialog:
+   1. Set Output field name to `Service`.
+   2. Set Output field type to `Text (string)`.
+   3. Set Output field length to `10` (This is more than enough to accommodate all service numbers).
+   4. Then, in the Expression box, enter the following expression to extract the service number:
+
+      ```sql
+      left("ServiceID", strpos("ServiceID", '_') - 1)
+      ```
+
+   This expression takes the substring from the start of the `ServiceID` up to (but not including) the first underscore (`_`), effectively isolating the service number.
+
+5. Click OK to apply the changes and add the new `Service` column to the dataset.
+6. Finally, export the modified layer to a new GeoJSON file.
+
+The new `Service` attribute allows us to easily load the correct timetable for each route in the frontend application.
+
+##### Reprojection
+
+The original shapefile dataset uses the British National Grid (EPSG:27700) coordinate reference system. For consistency with other datasets and to facilitate web mapping applications, the dataset was reprojected to WGS 84 (EPSG:4326).
 
 ### GM Bus Stopping Points
 
@@ -65,7 +93,18 @@ The dataset is provided in CSV format, and uses the WGS 84 (EPSG:4326) coordinat
 
 #### Stops Data Processing
 
-TODO: Describe any data processing steps taken to prepare these datasets for use in the project.
+##### Remove Inactive Stops
+
+To ensure that only active bus stops are included in the dataset, any records with a `Status` of `del` (Deleted/Inactive) were removed. This was accomplished using the following steps in QGIS:
+
+1. Load the `TfGMStoppingPoints.csv` into QGIS.
+2. Filter the layer to show only active stops by applying the following filter expression:
+
+   ```sql
+   "Status" = 'act'
+   ```
+
+3. Once the filter is applied, export the filtered layer to a new GeoJSON file.
 
 ### Bus Stops and Schedules
 
