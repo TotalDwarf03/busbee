@@ -1,0 +1,39 @@
+/* ==userstyle==
+@name         bee theme for dev.css
+@description  dev.css theme that makes use of a bee-inspired color palette
+@namespace    TotalDwarf03
+@version      1.0.0
+@author       TotalDwarf03 <kieran@totaldwarf.dev> (https://totaldwarf.dev)
+@homepageURL  https://busbee.totaldwarf.dev
+@supportURL   https://github.com/TotalDwarf03/busbee/issues
+@license      MIT
+==/userstyle== */
+
+:root {
+  /* font families */
+  --dc-font: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --dc-font-mono:
+    "Geist Mono", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
+    Consolas, "DejaVu Sans Mono", monospace;
+
+  /* Bee brand palette */
+  --bee-yellow: #fac921; /* primary brand yellow */
+  --bee-yellow-dark: #e0ae10; /* darker variant */
+  --bee-honey: #fff7d1; /* soft honey background (light) */
+  --bee-honey-surface: #fffef6; /* elevated surface (light) */
+  --bee-black: #121212; /* dark text */
+  --bee-border: #e3d59b; /* subtle border (light) */
+
+  /* semantic colors mapped to bee theme (light mode only) */
+  --dc-tx-1: var(--bee-black); /* primary text */
+  --dc-tx-2: #5c5c5c; /* secondary text */
+  --dc-bg-1: var(--bee-honey); /* primary background */
+  --dc-bg-2: var(--bee-honey-surface); /* secondary background */
+  --dc-bg-3: var(--bee-border); /* border */
+  --dc-lk-1: var(--bee-yellow-dark); /* link text */
+  --dc-lkb-1: var(--bee-yellow); /* link button */
+  --dc-lkb-2: var(--bee-yellow-dark); /* link button hover */
+  --dc-lkb-tx: var(--bee-black); /* text over link button */
+  --dc-ac-1: var(--bee-yellow); /* accent color */
+  --dc-ac-tx: var(--bee-black); /* text over accent color */
+}

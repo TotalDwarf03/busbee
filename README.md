@@ -96,4 +96,4 @@ markdownlint . --fix
 
 ### Additional Imports
 
-- Pico.css: [Pico.css](https://picocss.com/)
+- Dev.css: [Dev.css](https://github.com/intergrav/dev.css)
