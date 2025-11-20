@@ -31,6 +31,12 @@ class FilterPanel extends HTMLElement {
                 ><i class="fas fa-spinner fa-spin"></i> Loading map library...</span
                 >
             </blockquote>
+
+            <blockquote>
+                <p>
+                  <small><b>Note:</b> If you experience any issues with the maps being blank, please try refreshing the page or retoggling the mapping library.</small>
+                </p>            
+            </blockquote>
         `;
   }
 }
