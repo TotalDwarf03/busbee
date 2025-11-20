@@ -59,14 +59,6 @@
             <a href="./index.html">Home <i class="fas fa-home"></i></a>
           </li>
           <li>
-            <a href="./timetables.html"
-              >Timetables <i class="fas fa-clock"></i
-            ></a>
-          </li>
-          <li>
-            <a href="./routes.html">Bus Routes <i class="fas fa-bus"></i></a>
-          </li>
-          <li>
             <a href="./stops.html"
               >Bus Stops <i class="fas fa-map-marker-alt"></i
             ></a>
@@ -76,11 +68,32 @@
     </header>
 
     <aside>
-      <!-- Sidebar Content -->
+      <h2>Toggle Mapping Library</h2>
+      <fieldset onchange="updateMapLibrary(event)">
+        <input
+          type="radio"
+          id="leaflet"
+          name="mapping-library"
+          value="leaflet"
+        />
+        <label for="leaflet">Leaflet.js</label><br />
+
+        <input
+          type="radio"
+          id="openlayers"
+          name="mapping-library"
+          value="openlayers"
+        />
+        <label for="openlayers">OpenLayers</label><br />
+      </fieldset>
     </aside>
 
     <main>
       <h1>Bus Stops</h1>
+
+      <div id="map" style="height: 600px; width: 100%">
+        <!-- Map will be rendered here -->
+      </div>
     </main>
 
     <footer>
@@ -120,5 +133,7 @@
         height="80px"
       />
     </footer>
+
+    <script src="./scripts/filters.js" defer></script>
   </body>
 </html>
