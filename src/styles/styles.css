@@ -1,4 +1,9 @@
 img {
   width: 70%;
   margin: auto;
+  margin-bottom: 10px;
+}
+
+button {
+  margin-bottom: 10px;
 }
