@@ -74,15 +74,33 @@ function initDefaultMap() {
         visible: false,
         source: new ol.source.OSM(),
       }),
-      new ol.layer.Tile({
-        title: "OPNVKarte",
-        visible: false,
-        source: new ol.source.XYZ({
-          url: "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
-          maxZoom: 18,
-          attributions:
-            'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }),
+      new ol.layer.Group({
+        title: "World Imagery",
+        fold: "closed",
+        layers: [
+          new ol.layer.Tile({
+            title: "Esri World Imagery",
+            visible: false,
+            source: new ol.source.XYZ({
+              url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+              attributions:
+                "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+              maxZoom: 19,
+            }),
+          }),
+          new ol.layer.Tile({
+            title: "Stadia Stamen Toner Labels (Place Names)",
+            type: "overlay",
+            visible: false,
+            source: new ol.source.XYZ({
+              url: "https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}.png",
+              minZoom: 0,
+              maxZoom: 20,
+              attributions:
+                '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            }),
+          }),
+        ],
       }),
       new ol.layer.Tile({
         title: "Stadia Alidade Smooth",

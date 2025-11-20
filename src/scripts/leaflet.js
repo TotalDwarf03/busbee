@@ -61,12 +61,11 @@ function initDefaultMap() {
       '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   });
 
-  const OPNVKarte = L.tileLayer(
-    "https://tileserver.memomaps.de/tilegen/{z}/{x}/{y}.png",
+  var Esri_WorldImagery = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     {
-      maxZoom: 18,
       attribution:
-        'Map <a href="https://memomaps.de/">memomaps.de</a> <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        "Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
     },
   );
 
@@ -92,15 +91,35 @@ function initDefaultMap() {
     },
   );
 
+  // Placename Labels Layer
+  // This layer is mainly for the imagery base map to show place names since it has no labels by default
+  var Stadia_StamenTonerLabels = L.tileLayer(
+    "https://tiles.stadiamaps.com/tiles/stamen_toner_labels/{z}/{x}/{y}{r}.{ext}",
+    {
+      minZoom: 0,
+      maxZoom: 20,
+      attribution:
+        '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      ext: "png",
+    },
+  );
+
+  var imageryGroup = L.layerGroup([
+    Esri_WorldImagery,
+    Stadia_StamenTonerLabels,
+  ]);
+
   // Add Leaflet Layer Controls
   var baseMaps = {
-    OpenStreetMap: osm,
-    OPNVKarte: OPNVKarte,
+    "Open Street Map": osm,
+    "World Imagery": imageryGroup,
     "Stadia Alidade Smooth": Stadia_AlidadeSmooth,
     "Stadia Alidade Smooth Dark": Stadia_AlidadeSmoothDark,
   };
 
-  var layerControl = L.control.layers(baseMaps).addTo(map);
+  var overlays = {};
+
+  var layerControl = L.control.layers(baseMaps, overlays).addTo(map);
 
   return map;
 }
