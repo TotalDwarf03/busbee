@@ -91,10 +91,26 @@ markdownlint . --fix
 
 ### Primary Libraries & APIs
 
-- Leaflet (v1.9.4): [Leaflet](https://leafletjs.com/)
-- OpenLayers (v6.15.1): [OpenLayers](https://openlayers.org/)
-  - An older version of OpenLayers is used here since the use of Node Package Manager (NPM) is not used in the module curriculum.
-  - Version 6.15.1 is the latest version that does not require NPM for installation, and can instead use a simple script tag in the HTML.
+#### Leaflet
+
+Leaflet (v1.9.4): [Leaflet](https://leafletjs.com/)
+
+This is the latest stable version of Leaflet at the time of writing.
+
+##### Leaflet Extensions / Plugins
+
+- TODO: Add Leaflet extensions / plugins here
+
+#### OpenLayers
+
+OpenLayers (v6.15.1): [OpenLayers](https://openlayers.org/)
+
+An older version of OpenLayers is used here since the use of Node Package Manager (NPM) is not used in the module curriculum.
+Version 6.15.1 is the latest version that does not require NPM for installation, and can instead use a simple script tag in the HTML.
+
+##### OpenLayers Extensions / Plugins
+
+- [ol-layerswitcher](https://github.com/walkermatt/ol-layerswitcher): Adds a layer switcher control to OpenLayers maps.
 
 ### Additional Imports
 
