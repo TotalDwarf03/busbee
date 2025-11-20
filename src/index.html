@@ -48,27 +48,13 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+
+    <!-- Custom Components -->
+    <script src="./components/header.js" type="text/javascript" defer></script>
+    <script src="./components/footer.js" type="text/javascript" defer></script>
   </head>
   <body>
-    <header>
-      <h1>BusBee</h1>
-      <p>
-        A spatially enabled website to explore bus routes, stops, and timetables
-        across Greater Manchester.
-      </p>
-      <nav>
-        <ul>
-          <li>
-            <a href="./index.html">Home <i class="fas fa-home"></i></a>
-          </li>
-          <li>
-            <a href="./stops.html"
-              >Bus Stops <i class="fas fa-map-marker-alt"></i
-            ></a>
-          </li>
-        </ul>
-      </nav>
-    </header>
+    <custom-header></custom-header>
 
     <aside>
       <!-- Sidebar Content -->
@@ -195,42 +181,6 @@
       </section>
     </main>
 
-    <footer>
-      <p>
-        <small>&copy; 2025 BusBee. All rights reserved.</small>
-      </p>
-      <p>
-        <small
-          >Developed by Kieran Pritchard | IS3S665 GIS and the Spatial Web @ The
-          University of South Wales</small
-        >
-      </p>
-      <p>
-        <small>
-          <i class="fab fa-github"></i>
-          <a href="https://github.com/TotalDwarf03/busbee" target="_blank"
-            >Repository</a
-          >
-          |
-          <i class="fab fa-github"></i>
-          <a href="https://github.com/TotalDwarf03" target="_blank"
-            >GitHub Profile</a
-          >
-          |
-          <i class="fab fa-linkedin"></i>
-          <a href="https://www.linkedin.com/in/kprit-dev/" target="_blank"
-            >LinkedIn Profile</a
-          >
-          |
-          <i class="fas fa-globe"></i>
-          <a href="https://totaldwarf.dev" target="_blank">Website</a>
-        </small>
-      </p>
-      <img
-        class="footer-img"
-        src="../assets/busbee-logo-hori-large.png"
-        alt="BusBee"
-      />
-    </footer>
+    <custom-footer></custom-footer>
   </body>
 </html>
