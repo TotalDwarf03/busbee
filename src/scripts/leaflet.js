@@ -79,7 +79,7 @@ function loadMaps() {
 function initDefaultMap() {
   const manchester = [53.4808, -2.2426];
 
-  var map = L.map("map").setView(manchester, 13);
+  var map = L.map("map").setView(manchester, 10);
 
   var osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,

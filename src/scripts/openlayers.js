@@ -142,7 +142,7 @@ function initDefaultMap() {
     ],
     view: new ol.View({
       center: manchester,
-      zoom: 13,
+      zoom: 10,
     }),
   });
 
