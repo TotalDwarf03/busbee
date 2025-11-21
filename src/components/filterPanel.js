@@ -34,7 +34,12 @@ class FilterPanel extends HTMLElement {
 
             <blockquote>
                 <p>
-                  <small><b>Note:</b> If you experience any issues with the maps being blank, please try refreshing the page or retoggling the mapping library.</small>
+                  <small>
+                    <b>Note:</b> Sometimes, the map may not load its base layer correctly.
+                    This results in a blank or grey map area. If this happens, please try
+                    refreshing the page, changing the mapping library, or toggling to a different
+                    basemap layer using the layer control on the map.
+                  </small>
                 </p>            
             </blockquote>
         `;

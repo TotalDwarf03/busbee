@@ -184,6 +184,7 @@ function initPollutionMap(map, layerControl) {
     },
   };
 
+  // Add pollution layers to the map
   var pollutionLayers = {};
   for (const [name, config] of Object.entries(pollutionLayerConfigs)) {
     pollutionLayers[name] = L.tileLayer.wms(config.url, {
@@ -205,7 +206,7 @@ function initPollutionMap(map, layerControl) {
     .bindPopup("<b>Manchester</b><br>City of Manchester, UK.")
     .openPopup();
 
-  // Change the map view to be more zoomed out to see pollution overlays better
+  // Change the map view to be less zoomed in to see pollution overlays better
   map.setView([53.4808, -2.2426], 6);
 
   // When a pollution layer is added, show its legend
