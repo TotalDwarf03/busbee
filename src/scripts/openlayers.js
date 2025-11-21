@@ -271,6 +271,21 @@ function initStopMap(map) {
     });
   });
 
+  // Add a stops heatmap layer
+  const heatmapLayer = new ol.layer.Heatmap({
+    source: new ol.source.Vector({
+      url: "./datasets/stops/stops.geojson",
+      format: new ol.format.GeoJSON(),
+    }),
+    blur: 15,
+    radius: 8,
+    opacity: 0.6,
+    visible: false,
+    title: "Stop Density Heatmap",
+  });
+
+  map.addLayer(heatmapLayer);
+
   console.log("Stop map initialized.");
 }
 

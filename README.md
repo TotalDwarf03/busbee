@@ -116,6 +116,7 @@ This is the latest stable version of Leaflet at the time of writing.
 ##### Leaflet Extensions / Plugins
 
 - [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster): Clusters markers for improved performance and usability on maps with many markers.
+- [Leaflet HeatCanvas](https://github.com/sunng87/heatcanvas): Adds heatmap layer support to Leaflet using HTML5 canvas.
 
 #### OpenLayers
 

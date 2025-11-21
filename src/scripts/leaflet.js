@@ -57,7 +57,23 @@ function loadMaps() {
 
     markerClusterScript.onload = () => {
       console.log("Marker Cluster plugin loaded.");
-      initStopMap(map);
+
+      console.log("Loading HeatCanvas plugin...");
+      // Load HeatCanvas Plugin
+      const heatCanvasScript = document.createElement("script");
+      heatCanvasScript.src = "./scripts/plugins/heatcanvas/heatcanvas.js";
+      document.head.appendChild(heatCanvasScript);
+
+      heatCanvasScript.onload = () => {
+        const heatCanvasLeafletScript = document.createElement("script");
+        heatCanvasLeafletScript.src =
+          "./scripts/plugins/heatcanvas/heatcanvas-leaflet.js";
+        document.head.appendChild(heatCanvasLeafletScript);
+        heatCanvasLeafletScript.onload = () => {
+          console.log("HeatCanvas Leaflet plugin loaded.");
+          initStopMap(map, layerControl);
+        };
+      };
     };
   } else if (path.includes("/pollution.html")) {
     console.log("Initializing map for pollution page.");
@@ -156,8 +172,9 @@ function initDefaultMap() {
  * Function to initialize the Leaflet map for displaying stops.
  *
  * @param {L.Map} map - The Leaflet Map object to initialize for stops.
+ * @param {L.Control.Layers} layerControl - The Leaflet Layer Control to add heatmap layer to.
  */
-function initStopMap(map) {
+function initStopMap(map, layerControl) {
   var geojsonStops = fetch("./datasets/stops/stops.geojson").then((response) =>
     response.json(),
   );
@@ -193,6 +210,30 @@ function initStopMap(map) {
     markers.addLayer(geojsonLayer);
     map.addLayer(markers);
   });
+
+  // Add Heatmap Layer
+
+  // Wait for HeatCanvas to be loaded before using it
+  if (typeof HeatCanvas === "undefined") {
+    console.error(
+      "HeatCanvas is not loaded. Please ensure the plugin is loaded",
+    );
+    return;
+  }
+
+  var heatmap = new L.TileLayer.HeatCanvas({}, { step: 0.5, opacity: 0.5 });
+
+  geojsonStops.then((data) => {
+    for (const feature of data.features) {
+      heatmap.pushData(
+        feature.geometry.coordinates[1],
+        feature.geometry.coordinates[0],
+        40,
+      );
+    }
+  });
+
+  layerControl.addOverlay(heatmap, "Stop Density Heatmap");
 
   console.log("Stop map initialized.");
 }

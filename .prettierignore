@@ -4,3 +4,6 @@ src/datasets/**/*
 
 # Continue to format the README file in the datasets folder
 !src/datasets/README.md
+
+# Ignore any plugins
+src/scripts/plugins/**/*
