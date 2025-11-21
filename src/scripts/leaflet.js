@@ -180,9 +180,9 @@ function initStopMap(map) {
         return L.marker(latlng, {
           icon: L.icon({
             iconUrl: "./assets/bus-stop-icon.png",
-            iconSize: [25, 25],
-            iconAnchor: [12, 25],
-            popupAnchor: [0, -25],
+            iconSize: [50, 50],
+            iconAnchor: [25, 50],
+            popupAnchor: [0, -50],
           }),
         });
       },

@@ -160,6 +160,114 @@ function initDefaultMap() {
  * @param {ol.Map} map - The OpenLayers Map object to initialize for stops.
  */
 function initStopMap(map) {
+  const geojsonStops = fetch("./datasets/stops/stops.geojson").then(
+    (response) => response.json(),
+  );
+
+  geojsonStops.then((data) => {
+    const vectorSource = new ol.source.Vector({
+      features: new ol.format.GeoJSON().readFeatures(data, {
+        featureProjection: "EPSG:3857",
+      }),
+    });
+
+    const clusterSource = new ol.source.Cluster({
+      distance: 80,
+      source: vectorSource,
+    });
+
+    const clusters = new ol.layer.Vector({
+      source: clusterSource,
+      style: function (feature) {
+        const size = feature.get("features").length;
+        let style;
+        if (size > 1) {
+          style = new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 10 + Math.min(size, 20),
+              stroke: new ol.style.Stroke({
+                color: "#fff",
+              }),
+              fill: new ol.style.Fill({
+                color: "#3399CC",
+              }),
+            }),
+            text: new ol.style.Text({
+              text: size > 1 ? size.toString() : "",
+              fill: new ol.style.Fill({
+                color: "#fff",
+              }),
+            }),
+          });
+        } else {
+          // Use icon for individual stops
+          const stopFeature = feature.get("features")[0];
+          style = new ol.style.Style({
+            image: new ol.style.Icon({
+              anchor: [0.5, 1],
+              src: "./assets/bus-stop-icon.png",
+              scale: 0.2,
+            }),
+          });
+        }
+        return style;
+      },
+    });
+    map.addLayer(clusters);
+
+    // Add a popup on click to show stop information
+    // If there are multiple stops in a cluster, zoom in instead
+    const overlayContainerElement = document.createElement("div");
+    overlayContainerElement.className = "ol-popup";
+
+    const overlayLayer = new ol.Overlay({
+      element: overlayContainerElement,
+    });
+
+    map.addOverlay(overlayLayer);
+
+    map.on("click", function (event) {
+      map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+        const clusteredFeatures = feature.get("features");
+
+        // If only one stop in cluster, show popup
+        if (clusteredFeatures.length === 1) {
+          const stopFeature = clusteredFeatures[0];
+
+          const coordinate = stopFeature.getGeometry().getCoordinates();
+
+          overlayLayer.setPosition(coordinate);
+          overlayContainerElement.innerHTML =
+            "<b>Stop Name:</b> " +
+            stopFeature.get("CommonName") +
+            "<br><b>Stop ID (ATCO code):</b> " +
+            stopFeature.get("AtcoCode") +
+            "<br><b>Location:</b> " +
+            stopFeature.get("Latitude") +
+            ", " +
+            stopFeature.get("Longitude");
+          overlayContainerElement.style =
+            "background-color: white; padding: 5px; border: 1px solid black;";
+        } else {
+          // Zoom in on the cluster
+          const extent = ol.extent.createEmpty();
+          clusteredFeatures.forEach(function (feat) {
+            ol.extent.extend(extent, feat.getGeometry().getExtent());
+          });
+          map
+            .getView()
+            .fit(extent, { duration: 500, padding: [50, 50, 50, 50] });
+        }
+      });
+
+      // Hide popup when clicking outside features
+      if (!map.hasFeatureAtPixel(event.pixel)) {
+        overlayLayer.setPosition(undefined);
+        overlayContainerElement.innerHTML = "";
+      }
+    });
+  });
+
   console.log("Stop map initialized.");
 }
 
