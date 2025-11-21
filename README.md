@@ -101,7 +101,8 @@ markdownlint . --fix
 #### WMS Services
 
 - Emission WMS Layers: [Air quality pollutant emission maps for the UK and Devolved Governments](https://uk-air.defra.gov.uk/data/wms-services#emission-maps)
-  - These are used to display CO2, CO and NOx emission layers on maps.
+  - These are used to display a range of emission layers on maps.
+  - The authors also host a web GIS service which I have used to validate the WMS layers in BusBee: [NAEI Emissions App](https://naei.energysecurity.gov.uk/emissionsapp/).
 
 To find out more about my experience working with WMS services, see [Working with WMS Services](./docs/wms-services.md).
 
