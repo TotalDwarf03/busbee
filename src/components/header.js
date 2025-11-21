@@ -22,6 +22,11 @@ class CustomHeader extends HTMLElement {
             ></a>
           </li>
           <li>
+            <a href="./routes.html"
+              >Bus Routes <i class="fas fa-bus"></i
+            ></a>
+          </li>
+          <li>
             <a href="./pollution.html"
               >Air Pollution <i class="fas fa-smog"></i
             ></a>
