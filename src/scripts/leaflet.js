@@ -21,6 +21,21 @@ function loadLeaflet() {
     document.getElementById("load-status-message").innerHTML =
       '<i class="fas fa-check"></i> Map library loaded.';
 
+    loadMaps();
+  };
+}
+
+/**
+ * Function to load maps on to the page based on the current URL.
+ */
+function loadMaps() {
+  const path = window.location.pathname;
+
+  var { map, layerControl } = initDefaultMap();
+
+  if (path.includes("/stops.html")) {
+    console.log("Initializing map for stops page.");
+    console.log("Loading Marker Cluster plugin...");
     // Load Leaflet Marker Cluster Plugin
     // CSS
     const markerClusterCSS = document.createElement("link");
@@ -41,22 +56,9 @@ function loadLeaflet() {
     document.head.appendChild(markerClusterScript);
 
     markerClusterScript.onload = () => {
-      loadMaps();
+      console.log("Marker Cluster plugin loaded.");
+      initStopMap(map);
     };
-  };
-}
-
-/**
- * Function to load maps on to the page based on the current URL.
- */
-function loadMaps() {
-  const path = window.location.pathname;
-
-  var { map, layerControl } = initDefaultMap();
-
-  if (path.includes("/stops.html")) {
-    console.log("Initializing map for stops page.");
-    initStopMap(map);
   } else if (path.includes("/pollution.html")) {
     console.log("Initializing map for pollution page.");
     initPollutionMap(map, layerControl);
