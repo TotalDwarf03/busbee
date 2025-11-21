@@ -230,7 +230,7 @@ function initStopMap(map) {
       map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
         const clusteredFeatures = feature.get("features");
 
-        // If only one stop in cluster, show popup
+        // If only one stop in cluster, show popup and pan to it
         if (clusteredFeatures.length === 1) {
           const stopFeature = clusteredFeatures[0];
 
@@ -248,6 +248,9 @@ function initStopMap(map) {
             stopFeature.get("Longitude");
           overlayContainerElement.style =
             "background-color: white; padding: 5px; border: 1px solid black;";
+
+          // Pan to the stop
+          map.getView().animate({ center: coordinate, duration: 500 });
         } else {
           // Zoom in on the cluster
           const extent = ol.extent.createEmpty();
