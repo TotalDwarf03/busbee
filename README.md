@@ -85,9 +85,25 @@ markdownlint . --fix
 
 ### Data Sources
 
+#### Local Datasets
+
 - Bus Routes: [GM Bus Routes](https://www.data.gov.uk/dataset/136be10f-1667-474f-b52c-92bb24486739/bus-routes-1-25-000-scale-map-data)
 - Bus Stops: [GM Bus Stopping Points](https://www.data.gov.uk/dataset/05252e3a-acdf-428b-9314-80ac7b17ab76/bus-stopping-points)
 - Bus Timetables: [Bus Stops and Schedules](https://www.data.gov.uk/dataset/e100465a-9255-4ee0-b486-a02a17ba75fb/bus-stops-and-schedules)
+
+#### Basemaps + Layers
+
+- OpenStreetMap: [OpenStreetMap](https://www.openstreetmap.org/)
+- Esri World Imagery: [Esri World Imagery](https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9)
+- Stadia Alidade Smooth (Dark and Light): [Stadia Maps](https://stadiamaps.com/)
+- Stadia Stamen Toner Labels: [Stadia Maps](https://stadiamaps.com/)
+
+#### WMS Services
+
+- Emission WMS Layers: [Air quality pollutant emission maps for the UK and Devolved Governments](https://uk-air.defra.gov.uk/data/wms-services#emission-maps)
+  - These are used to display CO2, CO and NOx emission layers on maps.
+
+To find out more about my experience working with WMS services, see [Working with WMS Services](./docs/wms-services.md).
 
 ### Primary Libraries & APIs
 

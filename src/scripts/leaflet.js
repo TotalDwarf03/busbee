@@ -31,11 +31,14 @@ function loadLeaflet() {
 function loadMaps() {
   const path = window.location.pathname;
 
-  var map = initDefaultMap();
+  var { map, layerControl } = initDefaultMap();
 
   if (path.includes("/stops.html")) {
     console.log("Initializing map for stops page.");
     initStopMap(map);
+  } else if (path.includes("/pollution.html")) {
+    console.log("Initializing map for pollution page.");
+    initPollutionMap(map, layerControl);
   } else if (path.includes("/routes.html")) {
     console.log("Initializing map for routes page.");
     initRouteMap(map);
@@ -50,10 +53,12 @@ function loadMaps() {
 /**
  * Function to initialize the Leaflet map with default settings.
  *
- * @return {L.Map} The initialized Leaflet Map object.
+ * @return {Object} An object containing the Leaflet Map and Layer Control.
  */
 function initDefaultMap() {
-  var map = L.map("map").setView([51.505, -0.09], 13);
+  const manchester = [53.4808, -2.2426];
+
+  var map = L.map("map").setView(manchester, 13);
 
   var osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -121,7 +126,7 @@ function initDefaultMap() {
 
   var layerControl = L.control.layers(baseMaps, overlays).addTo(map);
 
-  return map;
+  return { map, layerControl };
 }
 
 /**
@@ -131,6 +136,118 @@ function initDefaultMap() {
  */
 function initStopMap(map) {
   console.log("Stop map initialized.");
+}
+
+/**
+ * Function to initialize the Leaflet map for displaying pollution data.
+ *
+ * @param {L.Map} map - The Leaflet Map object to initialize for pollution data.
+ * @param {L.Control.Layers} layerControl - The Leaflet Layer Control to add pollution layer to.
+ */
+function initPollutionMap(map, layerControl) {
+  const pollutionLayerConfigs = {
+    "CO2 Emissions": {
+      url: "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_CO2_viridis/MapServer/WMSServer?",
+      legend:
+        "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_CO2_viridis/MapServer/WMSServer?request=GetLegendGraphic&version=1.3.0&format=image/png&layer=5&",
+      layer: "5",
+    },
+    "NOx Emissions": {
+      url: "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_NOx_viridis/MapServer/WMSServer?",
+      legend:
+        "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_NOx_viridis/MapServer/WMSServer?request=GetLegendGraphic&version=1.3.0&format=image/png&layer=17&",
+      layer: "17",
+    },
+    "PM2.5 Emissions": {
+      url: "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_PM2_5_viridis/MapServer/WMSServer?",
+      legend:
+        "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_PM2_5_viridis/MapServer/WMSServer?request=GetLegendGraphic&version=1.3.0&format=image/png&layer=19&",
+      layer: "19",
+    },
+    "PM10 Emissions": {
+      url: "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_PM10_viridis/MapServer/WMSServer?",
+      legend:
+        "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_PM10_viridis/MapServer/WMSServer?request=GetLegendGraphic&version=1.3.0&format=image/png&layer=13&",
+      layer: "13",
+    },
+    "CH4 Emissions": {
+      url: "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_CH4_viridis/MapServer/WMSServer?",
+      legend:
+        "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_CH4_viridis/MapServer/WMSServer?request=GetLegendGraphic&version=1.3.0&format=image/png&layer=5&",
+      layer: "5",
+    },
+    "N2O Emissions": {
+      url: "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_N2O_viridis/MapServer/WMSServer?",
+      legend:
+        "https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_N2O_viridis/MapServer/WMSServer?request=GetLegendGraphic&version=1.3.0&format=image/png&layer=5&",
+      layer: "5",
+    },
+  };
+
+  var pollutionLayers = {};
+  for (const [name, config] of Object.entries(pollutionLayerConfigs)) {
+    pollutionLayers[name] = L.tileLayer.wms(config.url, {
+      layers: config.layer,
+      format: "image/png",
+      transparent: true,
+    });
+    pollutionLayers[name].legend = config.legend;
+  }
+
+  // Add pollution layer to layer control
+  for (const [name, layer] of Object.entries(pollutionLayers)) {
+    layerControl.addOverlay(layer, name);
+  }
+
+  // Add a marker to indicate where Manchester is
+  var manchesterMarker = L.marker([53.4808, -2.2426]).addTo(map);
+  manchesterMarker
+    .bindPopup("<b>Manchester</b><br>City of Manchester, UK.")
+    .openPopup();
+
+  // Change the map view to be more zoomed out to see pollution overlays better
+  map.setView([53.4808, -2.2426], 6);
+
+  // When a pollution layer is added, show its legend
+  map.on("overlayadd", function (eventLayer) {
+    console.log("Overlay added: " + eventLayer.name);
+
+    if (pollutionLayers[eventLayer.name]) {
+      const legendUrl = pollutionLayers[eventLayer.name].legend;
+      // Remove any existing legend control
+      if (map._pollutionLegendControl) {
+        map.removeControl(map._pollutionLegendControl);
+      }
+
+      // Create a new legend control
+      const LegendControl = L.Control.extend({
+        options: { position: "bottomright" },
+        onAdd: function () {
+          const div = L.DomUtil.create(
+            "div",
+            "leaflet-control pollution-legend",
+          );
+          div.innerHTML =
+            '<img src="' + legendUrl + '" alt="Legend" style="width:120px;">';
+          return div;
+        },
+      });
+      map._pollutionLegendControl = new LegendControl();
+      map.addControl(map._pollutionLegendControl);
+    }
+  });
+
+  // When a pollution layer is removed, clear the legend
+  map.on("overlayremove", function (eventLayer) {
+    if (pollutionLayers[eventLayer.name]) {
+      if (map._pollutionLegendControl) {
+        map.removeControl(map._pollutionLegendControl);
+        map._pollutionLegendControl = null;
+      }
+    }
+  });
+
+  console.log("Pollution map initialized.");
 }
 
 /**

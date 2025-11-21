@@ -50,6 +50,9 @@ function loadMaps() {
   if (path.includes("/stops.html")) {
     console.log("Initializing map for stops page.");
     initStopMap(map);
+  } else if (path.includes("/pollution.html")) {
+    console.log("Initializing map for pollution page.");
+    initPollutionMap(map);
   } else if (path.includes("/routes.html")) {
     console.log("Initializing map for routes page.");
     initRouteMap(map);
@@ -66,6 +69,8 @@ function loadMaps() {
  * @returns {ol.Map} OpenLayers Map with multiple base layers and layer switcher
  */
 function initDefaultMap() {
+  const manchester = ol.proj.fromLonLat([-2.2426, 53.4808]);
+
   var map = new ol.Map({
     target: "map",
     layers: [
@@ -126,7 +131,7 @@ function initDefaultMap() {
       }),
     ],
     view: new ol.View({
-      center: ol.proj.fromLonLat([-0.09, 51.505]),
+      center: manchester,
       zoom: 13,
     }),
   });
@@ -144,6 +149,15 @@ function initDefaultMap() {
  */
 function initStopMap(map) {
   console.log("Stop map initialized.");
+}
+
+/**
+ * Function to initialize the OpenLayers map for displaying pollution data.
+ *
+ * @param {ol.Map} map - The OpenLayers Map object to initialize for pollution data.
+ */
+function initPollutionMap(map) {
+  console.log("Pollution map initialized.");
 }
 
 /**

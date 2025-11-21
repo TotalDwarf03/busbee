@@ -21,6 +21,11 @@ class CustomHeader extends HTMLElement {
               >Bus Stops <i class="fas fa-map-marker-alt"></i
             ></a>
           </li>
+          <li>
+            <a href="./pollution.html"
+              >Air Pollution <i class="fas fa-smog"></i
+            ></a>
+          </li>          
         </ul>
       </nav>
     </header>
