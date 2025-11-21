@@ -21,7 +21,28 @@ function loadLeaflet() {
     document.getElementById("load-status-message").innerHTML =
       '<i class="fas fa-check"></i> Map library loaded.';
 
-    loadMaps();
+    // Load Leaflet Marker Cluster Plugin
+    // CSS
+    const markerClusterCSS = document.createElement("link");
+    markerClusterCSS.rel = "stylesheet";
+    markerClusterCSS.href =
+      "https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css";
+    document.head.appendChild(markerClusterCSS);
+
+    const markerClusterDefaultCSS = document.createElement("link");
+    markerClusterDefaultCSS.rel = "stylesheet";
+    markerClusterDefaultCSS.href =
+      "https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css";
+    document.head.appendChild(markerClusterDefaultCSS);
+
+    const markerClusterScript = document.createElement("script");
+    markerClusterScript.src =
+      "https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js";
+    document.head.appendChild(markerClusterScript);
+
+    markerClusterScript.onload = () => {
+      loadMaps();
+    };
   };
 }
 
@@ -135,6 +156,42 @@ function initDefaultMap() {
  * @param {L.Map} map - The Leaflet Map object to initialize for stops.
  */
 function initStopMap(map) {
+  var geojsonStops = fetch("./datasets/stops/stops.geojson").then((response) =>
+    response.json(),
+  );
+
+  geojsonStops.then((data) => {
+    var markers = L.markerClusterGroup();
+
+    var geojsonLayer = L.geoJSON(data, {
+      onEachFeature: function (feature, layer) {
+        layer.bindPopup(
+          "<b>Stop Name:</b> " +
+            feature.properties.CommonName +
+            "<br><b>Stop ID (ATCO code):</b> " +
+            feature.properties.AtcoCode +
+            "<br><b>Location:</b> " +
+            feature.properties.Latitude +
+            ", " +
+            feature.properties.Longitude,
+        );
+      },
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+          icon: L.icon({
+            iconUrl: "./assets/bus-stop-icon.png",
+            iconSize: [25, 25],
+            iconAnchor: [12, 25],
+            popupAnchor: [0, -25],
+          }),
+        });
+      },
+    });
+
+    markers.addLayer(geojsonLayer);
+    map.addLayer(markers);
+  });
+
   console.log("Stop map initialized.");
 }
 

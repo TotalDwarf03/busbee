@@ -115,7 +115,7 @@ This is the latest stable version of Leaflet at the time of writing.
 
 ##### Leaflet Extensions / Plugins
 
-- TODO: Add Leaflet extensions / plugins here
+- [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster): Clusters markers for improved performance and usability on maps with many markers.
 
 #### OpenLayers
 
