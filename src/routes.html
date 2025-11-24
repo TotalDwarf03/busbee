@@ -68,13 +68,147 @@
     <main>
       <h1>Bus Routes</h1>
 
-      <div id="map" style="height: 600px; width: 100%">
-        <!-- Map will be rendered here -->
-      </div>
+      <article>
+        <h2>Route Viewer</h2>
+
+        <label for="route-select"><b>Select a Route:</b></label>
+        <select id="route-select" name="route-select" style="width: 100%">
+          <option value="">Select route</option>
+          <!-- Option elements for routes will be populated here -->
+        </select>
+
+        <div id="route-details" style="margin: 1rem 0">
+          <!-- Route details will be displayed here -->
+        </div>
+
+        <div id="map" style="height: 400px; width: 100%; margin: 1rem 0">
+          <!-- Map will be rendered here -->
+        </div>
+
+        <div id="filter-status">
+          <!-- Filter status messages will be displayed here -->
+        </div>
+
+        <form>
+          <fieldset>
+            <legend><h2>Route Filters</h2></legend>
+
+            <p>
+              Use the filters below to select a route variation, direction, and
+              day type to view the corresponding bus route on the map.
+            </p>
+
+            <div
+              class="filter-group"
+              style="
+                display: flex;
+                gap: 2rem;
+                justify-content: space-between;
+                align-items: flex-start;
+                width: 100%;
+              "
+            >
+              <div style="flex: 1">
+                <span><b>Day:</b></span>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    id="day-weekdays"
+                    name="day"
+                    value="1"
+                    checked
+                  />
+                  Weekdays
+                </label>
+                <br />
+                <label>
+                  <input type="radio" id="day-saturday" name="day" value="3" />
+                  Saturday
+                </label>
+                <br />
+                <label>
+                  <input type="radio" id="day-sundays" name="day" value="4" />
+                  Sundays
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    id="day-bankholidays"
+                    name="day"
+                    value="5"
+                  />
+                  Bank Holidays
+                </label>
+                <br />
+              </div>
+              <div style="flex: 1">
+                <span><b>Direction:</b></span>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    id="direction-inbound"
+                    name="direction"
+                    value="I"
+                    checked
+                  />
+                  Inbound
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    id="direction-outbound"
+                    name="direction"
+                    value="O"
+                  />
+                  Outbound
+                </label>
+                <br />
+                <label>
+                  <input
+                    type="radio"
+                    id="direction-circular"
+                    name="direction"
+                    value="C"
+                  />
+                  Circular
+                </label>
+                <br />
+              </div>
+            </div>
+
+            <div style="width: 100%; margin-top: 1rem">
+              <label for="variation"><b>Variation:</b></label>
+              <select id="variation" name="variation" style="width: 100%">
+                <option value="">Select variation</option>
+                <!-- Option elements for variations will be populated here -->
+              </select>
+            </div>
+
+            <hr />
+            <p>
+              <small
+                ><b>Note:</b> If an input is
+                <span class="disabled">disabled</span>, it means that the
+                selected route does not have any available options for that
+                filter.</small
+              >
+            </p>
+          </fieldset>
+
+          <button type="button" id="apply-filters" onclick="applyFilters()">
+            Apply Filters
+          </button>
+        </form>
+      </article>
     </main>
 
     <custom-footer></custom-footer>
 
+    <script src="./scripts/routeSelection.js"></script>
     <script src="./scripts/filters.js" defer></script>
   </body>
 </html>

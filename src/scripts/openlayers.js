@@ -1,3 +1,5 @@
+var mapsPlaceholder = {}; // Placeholder object to store map instances
+
 /**
  * Function to load the CSS and JS for OpenLayers mapping library.
  */
@@ -484,6 +486,12 @@ function initPollutionMap(map, layerControl) {
  * @param {ol.Map} map - The OpenLayers Map object to initialize for routes.
  */
 function initRouteMap(map) {
+  // Store the map instance globally for use in other functions
+  mapsPlaceholder.openlayersMap = map;
+
+  // Load the UI (Function from routeSelection.js)
+  populatePage();
+
   console.log("Route map initialized.");
 }
 
@@ -494,6 +502,95 @@ function initRouteMap(map) {
  */
 function initTimetableMap(map) {
   console.log("Timetable map initialized.");
+}
+
+/**
+ * Function to remove any existing route from the OpenLayers map.
+ */
+function removeRouteFromMap() {
+  var map = mapsPlaceholder.openlayersMap;
+
+  // Remove existing route layer if present
+  if (map._routeLayer) {
+    map.removeLayer(map._routeLayer);
+    map._routeLayer = null;
+  }
+}
+
+/**
+ * Function to draw a route on the openLayers Map.
+ *
+ * @param {Object} geojsonData - The GeoJSON data for the route to be drawn.
+ */
+function drawRouteOnMap(geojsonData) {
+  var map = mapsPlaceholder.openlayersMap;
+
+  // Remove any existing route layers
+  removeRouteFromMap();
+
+  // Create a new vector source and layer for the route
+  const routeSource = new ol.source.Vector({
+    features: new ol.format.GeoJSON().readFeatures(geojsonData, {
+      featureProjection: "EPSG:3857",
+    }),
+  });
+
+  const routeLayer = new ol.layer.Vector({
+    source: routeSource,
+    style: new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: "#0000FF",
+        width: 4,
+        opacity: 0.7,
+      }),
+    }),
+  });
+
+  map.addLayer(routeLayer);
+
+  // Add popup to show route information
+  const overlayContainerElement = document.createElement("div");
+  overlayContainerElement.className = "ol-popup";
+
+  const overlayLayer = new ol.Overlay({
+    element: overlayContainerElement,
+  });
+
+  map.addOverlay(overlayLayer);
+
+  // Show popup with route distance when the route is clicked
+  map.on("click", function (event) {
+    map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+      if (layer === routeLayer) {
+        const coordinate = feature
+          .getGeometry()
+          .getClosestPoint(map.getView().getCenter());
+
+        overlayLayer.setPosition(coordinate);
+        overlayContainerElement.innerHTML =
+          "<b>Route Distance:</b><br>" +
+          (geojsonData.properties.totaldist
+            ? Math.round(geojsonData.properties.totaldist) +
+              " units <small>(Nearest whole number)</small>"
+            : "N/A");
+        overlayContainerElement.style =
+          "background-color: white; padding: 5px; border: 1px solid black;";
+      }
+    });
+
+    // Hide popup when clicking outside features
+    if (!map.hasFeatureAtPixel(event.pixel)) {
+      overlayLayer.setPosition(undefined);
+      overlayContainerElement.innerHTML = "";
+    }
+  });
+
+  // Store the route layer on the map instance for future reference
+  map._routeLayer = routeLayer;
+
+  // Fit the map view to the route extent
+  const routeExtent = routeSource.getExtent();
+  map.getView().fit(routeExtent, { duration: 1000, padding: [50, 50, 50, 50] });
 }
 
 loadOpenLayers();

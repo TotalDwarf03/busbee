@@ -13,3 +13,15 @@ img {
 button {
   margin-bottom: 10px;
 }
+
+/* Style for disabled form elements */
+.disabled {
+  background-color: #e0e0e0;
+  color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+/* Overwrite dev.css fieldset padding */
+fieldset {
+  padding: 1.25rem;
+}

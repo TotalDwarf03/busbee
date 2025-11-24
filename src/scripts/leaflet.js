@@ -1,3 +1,5 @@
+var mapsPlaceholder = {}; // Placeholder object to store map instances
+
 /**
  * Function to load the CSS and JS for Leaflet mapping library.
  */
@@ -357,6 +359,12 @@ function initPollutionMap(map, layerControl) {
  * @param {L.Map} map - The Leaflet Map object to initialize for routes.
  */
 function initRouteMap(map) {
+  // Store the map instance globally for use in other functions
+  mapsPlaceholder.leafletMap = map;
+
+  // Load the UI (Function from routeSelection.js)
+  populatePage();
+
   console.log("Route map initialized.");
 }
 
@@ -367,6 +375,58 @@ function initRouteMap(map) {
  */
 function initTimetableMap(map) {
   console.log("Timetable map initialized.");
+}
+
+/**
+ * Function to remove any existing route from the Leaflet map.
+ */
+function removeRouteFromMap() {
+  // Get the map instance
+  var map = mapsPlaceholder.leafletMap;
+
+  // Remove any existing route layers
+  if (map._routeLayer) {
+    map.removeLayer(map._routeLayer);
+    map._routeLayer = null;
+  }
+}
+
+/**
+ * Function to draw a route on the Leaflet map.
+ *
+ * @param {Object} geojsonData - The GeoJSON data for the route to be drawn.
+ */
+function drawRouteOnMap(geojsonData) {
+  // Get the map instance
+  var map = mapsPlaceholder.leafletMap;
+
+  // Remove any existing route layers
+  removeRouteFromMap();
+
+  // Create a new GeoJSON layer for the route
+  const routeLayer = L.geoJSON(geojsonData, {
+    style: {
+      color: "blue",
+      weight: 5,
+      opacity: 0.7,
+    },
+  }).addTo(map);
+
+  // Add popup to show route information
+  routeLayer.bindPopup(
+    "<b>Route Distance:</b><br>" +
+      (geojsonData.properties.totaldist
+        ? " " +
+          Math.round(geojsonData.properties.totaldist) +
+          " units <small>(Nearest whole number)</small>"
+        : " N/A"),
+  );
+
+  // Store the route layer on the map instance for future reference
+  map._routeLayer = routeLayer;
+
+  // Fit the map view to the route bounds
+  map.fitBounds(routeLayer.getBounds());
 }
 
 loadLeaflet();
