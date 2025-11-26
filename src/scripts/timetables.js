@@ -8,9 +8,9 @@ const directions = {
 
 const dayTypes = {
   1: ["M", "T", "W", "Th", "F"],
-  2: ["S"],
-  3: ["Su"],
-  4: ["BH"],
+  3: ["S"],
+  4: ["Su"],
+  5: ["BH"],
 };
 
 const dayTypeNames = {
