@@ -124,8 +124,26 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
             ? endPoint[headers.indexOf("published_arrival_time")]
             : "N/A",
         },
-        unique_journey_identifier:
-          startPoint[headers.indexOf("unique_journey_identifier")],
+        direct_access: {
+          unique_journey_identifier:
+            startPoint[headers.indexOf("unique_journey_identifier")],
+          route_direction: startPoint[headers.indexOf("route_direction")],
+          operates_on_mondays:
+            startPoint[headers.indexOf("operates_on_mondays")],
+          operates_on_tuesdays:
+            startPoint[headers.indexOf("operates_on_tuesdays")],
+          operates_on_wednesdays:
+            startPoint[headers.indexOf("operates_on_wednesdays")],
+          operates_on_thursdays:
+            startPoint[headers.indexOf("operates_on_thursdays")],
+          operates_on_fridays:
+            startPoint[headers.indexOf("operates_on_fridays")],
+          operates_on_saturdays:
+            startPoint[headers.indexOf("operates_on_saturdays")],
+          operates_on_sundays:
+            startPoint[headers.indexOf("operates_on_sundays")],
+          bank_holidays: startPoint[headers.indexOf("bank_holidays")],
+        },
       };
     });
 
@@ -334,8 +352,23 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
           leftCol.style.borderLeft = "3px solid #ccc"; // Add left border
 
           leftRuns.forEach((run) => {
+            const queryParams = new URLSearchParams({
+              route: route,
+              unique_journey_identifier:
+                run.direct_access.unique_journey_identifier,
+              route_direction: run.direct_access.route_direction,
+              operates_on_mondays: run.direct_access.operates_on_mondays,
+              operates_on_tuesdays: run.direct_access.operates_on_tuesdays,
+              operates_on_wednesdays: run.direct_access.operates_on_wednesdays,
+              operates_on_thursdays: run.direct_access.operates_on_thursdays,
+              operates_on_fridays: run.direct_access.operates_on_fridays,
+              operates_on_saturdays: run.direct_access.operates_on_saturdays,
+              operates_on_sundays: run.direct_access.operates_on_sundays,
+              bank_holidays: run.direct_access.bank_holidays,
+            });
+
             const li = document.createElement("li");
-            li.innerHTML = `<a href="./visualise.html?route=${route}&unique_journey_identifier=${run.unique_journey_identifier}">${run.start.time} <i class="fa fa-arrow-right" aria-hidden="true"></i> ${run.end.time}</a>`;
+            li.innerHTML = `<a href="./visualise.html?${queryParams.toString()}">${run.start.time} <i class="fa fa-arrow-right" aria-hidden="true"></i> ${run.end.time}</a>`;
             leftCol.appendChild(li);
           });
 
@@ -347,8 +380,23 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
           rightCol.style.borderLeft = "3px solid #ccc"; // Add left border
 
           rightRuns.forEach((run) => {
+            const queryParams = new URLSearchParams({
+              route: route,
+              unique_journey_identifier:
+                run.direct_access.unique_journey_identifier,
+              route_direction: run.direct_access.route_direction,
+              operates_on_mondays: run.direct_access.operates_on_mondays,
+              operates_on_tuesdays: run.direct_access.operates_on_tuesdays,
+              operates_on_wednesdays: run.direct_access.operates_on_wednesdays,
+              operates_on_thursdays: run.direct_access.operates_on_thursdays,
+              operates_on_fridays: run.direct_access.operates_on_fridays,
+              operates_on_saturdays: run.direct_access.operates_on_saturdays,
+              operates_on_sundays: run.direct_access.operates_on_sundays,
+              bank_holidays: run.direct_access.bank_holidays,
+            });
+
             const li = document.createElement("li");
-            li.innerHTML = `<a href="./visualise.html?route=${route}&unique_journey_identifier=${run.unique_journey_identifier}">${run.start.time} <i class="fa fa-arrow-right" aria-hidden="true"></i> ${run.end.time}</a>`;
+            li.innerHTML = `<a href="./visualise.html?${queryParams.toString()}">${run.start.time} <i class="fa fa-arrow-right" aria-hidden="true"></i> ${run.end.time}</a>`;
             rightCol.appendChild(li);
           });
 
