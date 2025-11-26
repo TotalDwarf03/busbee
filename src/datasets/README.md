@@ -144,3 +144,23 @@ During the conversion, some additional logic was applied to filter the data:
 - **Filter out inactive timetables:** Only save timetables with an end date of 2099-12-31, indicating they are still active.
 
 For some of the routes, this halved the number of records in the resulting CSV files, making them more manageable for analysis.
+
+### NaPTAN Dataset
+
+**Source:** [NaPTAN Dataset](https://beta-naptan.dft.gov.uk/)
+
+**Repository Path:** [`naptan_stops.csv`](./naptan_stops.csv)
+
+#### NaPTAN Data Overview
+
+The NaPTAN (National Public Transport Access Nodes) dataset provides a comprehensive list of public transport access points across the UK, including bus stops, train stations, and other transport nodes. The dataset includes various attributes for each access point, such as:
+
+- `ATCOCode`: A unique identifier for each bus stop, which can be used to link with other datasets.
+- `CommonName`: The common name of the bus stop.
+- `Latitude` and `Longitude`: The geographical coordinates of the bus stop.
+- `Status`: The operational status of the bus stop (i.e. `act` = Active, `del` = Deleted/Inactive).
+
+The dataset is provided in CSV format and uses the WGS 84 (EPSG:4326) coordinate reference system for the latitude and longitude fields.
+
+This dataset is used within the project to supplement the [GM Bus Stopping Points](#gm-bus-stopping-points) dataset, providing information about stops that are not included in the TfGM dataset.
+The TfGM dataset focuses specifically on Greater Manchester, while the NaPTAN dataset covers the entire UK.

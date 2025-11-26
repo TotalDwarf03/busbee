@@ -52,29 +52,56 @@
     <!-- Custom Components -->
     <script src="./components/header.js" type="text/javascript" defer></script>
     <script src="./components/footer.js" type="text/javascript" defer></script>
-    <script
-      src="./components/filterPanel.js"
-      type="text/javascript"
-      defer
-    ></script>
+
+    <!-- Style this page to be slightly wider than normal -->
+    <!-- Body 48rem -> 56rem, aside positioning adjusted to match -->
+    <style>
+      body {
+        max-width: 56rem;
+      }
+      @media only screen and (min-width: 82rem) {
+        aside:nth-child(2n) {
+          left: calc(50% - ((56rem) / 2) - (16rem));
+        }
+      }
+    </style>
   </head>
   <body>
     <custom-header></custom-header>
 
     <aside>
-      <filter-panel></filter-panel>
+      <blockquote>
+        <span
+          ><i class="fa fa-info-circle" aria-hidden="true"></i> You can click on
+          a route time to visualise it on a map in real time.</span
+        >
+      </blockquote>
     </aside>
 
     <main>
-      <h1>Bus Timetables</h1>
+      <h1>Timetable Viewer</h1>
 
-      <div id="map" style="height: 600px; width: 100%">
-        <!-- Map will be rendered here -->
-      </div>
+      <article>
+        <div id="route-header-information" style="margin-bottom: 1rem">
+          <!-- Route Header Information -->
+        </div>
+
+        <div id="route-heading">
+          <!-- Route Heading -->
+        </div>
+
+        <span id="loading-timetables"
+          ><i class="fa fa-spinner fa-spin"></i> Loading timetables...</span
+        >
+
+        <div id="timetables">
+          <!-- Timetables -->
+        </div>
+      </article>
     </main>
 
     <custom-footer></custom-footer>
 
-    <script src="./scripts/filters.js" defer></script>
+    <script src="./scripts/timetables.js" defer></script>
   </body>
 </html>

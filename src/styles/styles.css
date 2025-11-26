@@ -25,3 +25,27 @@ button {
 fieldset {
   padding: 1.25rem;
 }
+
+.pill {
+  border-radius: 9999px;
+  padding: 0.25em 0.75em;
+  font-size: 0.875rem;
+  display: inline-block;
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.pill.enabled {
+  background-color: #4caf50;
+  color: white;
+}
+
+.pill.disabled {
+  background-color: #f44336;
+  color: white;
+}
+
+.pill.variant {
+  background-color: #2196f3;
+  color: white;
+}
