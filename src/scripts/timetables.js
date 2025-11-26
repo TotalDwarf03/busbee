@@ -31,6 +31,12 @@ const direction = urlParams.get("direction");
 const variant = urlParams.get("variant");
 const day = urlParams.get("day");
 
+// If any of the parameters are missing, alert the user and redirect to the routes page
+if (!route || !direction || !variant || !day) {
+  alert("Missing required parameters. Redirecting to routes page.");
+  window.location.href = "./routes.html";
+}
+
 // Display selected route information
 document.getElementById("route-header-information").innerHTML = `
     <div style="display: flex; gap: 2rem;">
@@ -56,8 +62,36 @@ document.getElementById("route-heading").innerHTML = `
 
 // Fetch and display timetable data
 fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
-  .then((response) => response.text())
+  .then((response) => {
+    if (!response.ok) {
+      // Show a message to the user
+      const timetableResultsDiv = document.getElementById("timetables");
+      timetableResultsDiv.innerHTML = `
+        <blockquote>
+          <span><i class="fas fa-exclamation-triangle"></i> Timetable data not found for the specified route. Please try a different route.</span>
+          <hr style="margin: 1rem 0;" />
+          <p>
+            The timetables dataset is very large and hard to work with so filtering both datasets to only include routes with timetables and vice versa
+            hasn't been done for this project. This means that some routes may not have timetable data available and may not show up in the results.
+          </p>
+          <p>
+            Data consistency improvements is an area of improvement that would be looked at with more development time.
+          </p>
+
+          <button onclick="window.location.href='./routes.html'" style="padding-bottom: 0.25rem;">Return to Routes Page</button>
+        </blockquote>
+      `;
+
+      // Hide the loading indicator since data is loaded
+      document.getElementById("loading-timetables").style.display = "none";
+
+      throw new Error("Timetable data not found for the specified route.");
+    }
+    return response.text();
+  })
   .then((data) => {
+    // Parse CSV data
+
     const lines = data.split("\n");
     const headers = lines[0].split(",");
 

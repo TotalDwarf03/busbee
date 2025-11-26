@@ -83,9 +83,6 @@ function loadMaps() {
   } else if (path.includes("/routes.html")) {
     console.log("Initializing map for routes page.");
     initRouteMap(map);
-  } else if (path.includes("/timetables.html")) {
-    console.log("Initializing map for timetables page.");
-    initTimetableMap(map);
   } else {
     console.log("No map to initialize for this page.");
   }
@@ -366,15 +363,6 @@ function initRouteMap(map) {
   populatePage();
 
   console.log("Route map initialized.");
-}
-
-/**
- * Function to initialize the Leaflet map for displaying timetables.
- *
- * @param {L.Map} map - The Leaflet Map object to initialize for timetables.
- */
-function initTimetableMap(map) {
-  console.log("Timetable map initialized.");
 }
 
 /**
