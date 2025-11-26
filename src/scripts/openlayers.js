@@ -521,8 +521,12 @@ function removeRouteFromMap() {
  * Function to draw a route on the openLayers Map.
  *
  * @param {Object} geojsonData - The GeoJSON data for the route to be drawn.
+ * @param {string} route - The selected route number.
+ * @param {string} day - The selected day type (i.e. weekday, saturday, sunday or bank holiday).
+ * @param {string} direction - The selected direction (i.e. inbound or outbound or circular).
+ * @param {string} variant - The selected route variant.
  */
-function drawRouteOnMap(geojsonData) {
+function drawRouteOnMap(geojsonData, route, day, direction, variant) {
   var map = mapsPlaceholder.openlayersMap;
 
   // Remove any existing route layers
@@ -568,11 +572,21 @@ function drawRouteOnMap(geojsonData) {
 
         overlayLayer.setPosition(coordinate);
         overlayContainerElement.innerHTML =
-          "<b>Route Distance:</b><br>" +
+          "<h3>Route Distance:</h3>" +
           (geojsonData.properties.totaldist
-            ? Math.round(geojsonData.properties.totaldist) +
+            ? " " +
+              Math.round(geojsonData.properties.totaldist) +
               " units <small>(Nearest whole number)</small>"
-            : "N/A");
+            : " N/A") +
+          "<br><button style='margin: 1.25em 0px;' onclick='window.location.href=\"./timetables.html?route=" +
+          route +
+          "&direction=" +
+          direction +
+          "&variant=" +
+          variant +
+          "&day=" +
+          day +
+          "\"'>View Timetable</button>";
         overlayContainerElement.style =
           "background-color: white; padding: 5px; border: 1px solid black;";
       }

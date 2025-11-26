@@ -79,7 +79,13 @@ function applyFilters() {
 
       const routeToDisplay = filteredRoutes[0];
 
-      drawRouteOnMap(routeToDisplay);
+      drawRouteOnMap(
+        routeToDisplay,
+        selectedRoute,
+        selectedDay,
+        selectedDirection,
+        selectedVariation,
+      );
     })
     .catch((error) => {
       console.error("Error fetching routes GeoJSON:", error);

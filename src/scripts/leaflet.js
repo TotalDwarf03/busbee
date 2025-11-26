@@ -395,8 +395,12 @@ function removeRouteFromMap() {
  * Function to draw a route on the Leaflet map.
  *
  * @param {Object} geojsonData - The GeoJSON data for the route to be drawn.
+ * @param {string} route - The selected route number.
+ * @param {string} day - The selected day type (i.e. weekday, saturday, sunday or bank holiday).
+ * @param {string} direction - The selected direction (i.e. inbound or outbound or circular).
+ * @param {string} variant - The selected route variant.
  */
-function drawRouteOnMap(geojsonData) {
+function drawRouteOnMap(geojsonData, route, day, direction, variant) {
   // Get the map instance
   var map = mapsPlaceholder.leafletMap;
 
@@ -414,12 +418,21 @@ function drawRouteOnMap(geojsonData) {
 
   // Add popup to show route information
   routeLayer.bindPopup(
-    "<b>Route Distance:</b><br>" +
+    "<h3>Route Distance:</h3>" +
       (geojsonData.properties.totaldist
         ? " " +
           Math.round(geojsonData.properties.totaldist) +
           " units <small>(Nearest whole number)</small>"
-        : " N/A"),
+        : " N/A") +
+      "<br><button style='margin: 1.25em 0px;' onclick='window.location.href=\"./timetables.html?route=" +
+      route +
+      "&direction=" +
+      direction +
+      "&variant=" +
+      variant +
+      "&day=" +
+      day +
+      "\"'>View Timetable</button>",
   );
 
   // Store the route layer on the map instance for future reference
