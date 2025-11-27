@@ -399,6 +399,8 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
               operates_on_saturdays: run.direct_access.operates_on_saturdays,
               operates_on_sundays: run.direct_access.operates_on_sundays,
               bank_holidays: run.direct_access.bank_holidays,
+              start_time: run.start.time,
+              end_time: run.end.time,
             });
 
             const li = document.createElement("li");
@@ -427,6 +429,8 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
               operates_on_saturdays: run.direct_access.operates_on_saturdays,
               operates_on_sundays: run.direct_access.operates_on_sundays,
               bank_holidays: run.direct_access.bank_holidays,
+              start_time: run.start.time,
+              end_time: run.end.time,
             });
 
             const li = document.createElement("li");
