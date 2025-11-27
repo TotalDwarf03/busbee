@@ -84,7 +84,7 @@ function loadMaps() {
     console.log("Initializing map for routes page.");
     initRouteMap(map);
   } else {
-    console.log("No map to initialize for this page.");
+    console.log("No further map configuration needed for this page.");
   }
 }
 

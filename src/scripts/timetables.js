@@ -401,6 +401,8 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
               bank_holidays: run.direct_access.bank_holidays,
               start_time: run.start.time,
               end_time: run.end.time,
+              start_stop: run.start.stop_name,
+              end_stop: run.end.stop_name,
             });
 
             const li = document.createElement("li");
@@ -431,6 +433,8 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
               bank_holidays: run.direct_access.bank_holidays,
               start_time: run.start.time,
               end_time: run.end.time,
+              start_stop: run.start.stop_name,
+              end_stop: run.end.stop_name,
             });
 
             const li = document.createElement("li");
