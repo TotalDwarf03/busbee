@@ -49,3 +49,8 @@ fieldset {
   background-color: #2196f3;
   color: white;
 }
+
+div[disabled] {
+  pointer-events: none;
+  opacity: 0.6;
+}

@@ -2,11 +2,18 @@
  * Function to filter and display routes based on user selections.
  */
 function applyFilters() {
+  // Show loading indicator
+  const loadingRouteDetails = document.getElementById("loading-route-details");
+  loadingRouteDetails.style.display = "";
+
   // Get all UI filter values
   const routeSelect = document.getElementById("route-select");
   const dayRadio = document.getElementsByName("day");
   const directionRadio = document.getElementsByName("direction");
   const variationSelect = document.getElementById("variation");
+
+  // Scroll up to the route select to show the loading indicator
+  routeSelect.scrollIntoView({ behavior: "smooth", block: "center" });
 
   const selectedRoute = routeSelect.value;
   let selectedDay = "";
@@ -29,12 +36,6 @@ function applyFilters() {
     }
   }
 
-  console.log("Applying filters:");
-  console.log("Selected Route:", selectedRoute);
-  console.log("Selected Day:", selectedDay);
-  console.log("Selected Direction:", selectedDirection);
-  console.log("Selected Variation:", selectedVariation);
-
   // Get the routes GeoJSON
   fetch("./datasets/routes/routes.geojson")
     .then((response) => response.json())
@@ -55,8 +56,6 @@ function applyFilters() {
           variation === selectedVariation
         );
       });
-
-      console.log("Filtered Routes:", filteredRoutes);
 
       // Update the filter status messages
       const filterStatusDiv = document.getElementById("filter-status");
@@ -86,6 +85,9 @@ function applyFilters() {
         selectedDirection,
         selectedVariation,
       );
+
+      // Hide loading indicator
+      loadingRouteDetails.style.display = "none";
     })
     .catch((error) => {
       console.error("Error fetching routes GeoJSON:", error);
@@ -119,6 +121,13 @@ function populatePage() {
           routeSelect.appendChild(option);
         }
       });
+
+      // Update the UI to indicate routes are loaded
+      const routeViewerDiv = document.getElementById("route-viewer");
+      routeViewerDiv.removeAttribute("disabled");
+
+      const loadingRoute = document.getElementById("loading-routes");
+      loadingRoute.style.display = "none";
     })
     .catch((error) => {
       console.error("Error fetching routes GeoJSON:", error);
@@ -127,7 +136,6 @@ function populatePage() {
   // Display route details when a route is selected
   routeSelect.addEventListener("change", (event) => {
     const selectedRoute = event.target.value;
-    console.log("Selected route:", selectedRoute);
 
     // Check if the default route option is available
     // If so, remove it so it can't be selected again
@@ -177,8 +185,6 @@ function populatePage() {
           option.value = routeVariant;
           option.textContent = routeVariant;
           variationSelect.appendChild(option);
-        } else {
-          console.log("Variation option exists:", routeVariant);
         }
 
         // Update the day and direction radios based on available data
