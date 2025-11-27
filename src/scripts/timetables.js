@@ -116,15 +116,15 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
         (row) =>
           row[headers.indexOf("route_direction")] === direction &&
           ((isMonday && row[headers.indexOf("operates_on_mondays")] == 1) ||
-            (isTuesday && row[headers.indexOf("operates_on_tuesdays")] === 1) ||
+            (isTuesday && row[headers.indexOf("operates_on_tuesdays")] == 1) ||
             (isWednesday &&
-              row[headers.indexOf("operates_on_wednesdays")] === 1) ||
+              row[headers.indexOf("operates_on_wednesdays")] == 1) ||
             (isThursday &&
-              row[headers.indexOf("operates_on_thursdays")] === 1) ||
-            (isFriday && row[headers.indexOf("operates_on_fridays")] === 1) ||
+              row[headers.indexOf("operates_on_thursdays")] == 1) ||
+            (isFriday && row[headers.indexOf("operates_on_fridays")] == 1) ||
             (isSaturday &&
-              row[headers.indexOf("operates_on_saturdays")] === 1) ||
-            (isSunday && row[headers.indexOf("operates_on_sundays")] === 1) ||
+              row[headers.indexOf("operates_on_saturdays")] == 1) ||
+            (isSunday && row[headers.indexOf("operates_on_sundays")] == 1) ||
             (isBankHoliday && row[headers.indexOf("bank_holidays")] === "A")),
       );
 
