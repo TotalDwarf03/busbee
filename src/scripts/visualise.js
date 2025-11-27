@@ -54,16 +54,23 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
     const journeyData = lines
       .slice(1)
       .map((line) => line.split(","))
-      .filter((row) => row[headers.indexOf("unique_journey_identifier")] === uniqueJourneyIdentifier && row[headers.indexOf("route_direction")] === routeDirection &&
-        ((row[headers.indexOf("operates_on_mondays")] === operatesOnMondays) ||
-         (row[headers.indexOf("operates_on_tuesdays")] === operatesOnTuesdays) ||
-         (row[headers.indexOf("operates_on_wednesdays")] === operatesOnWednesdays) ||
-         (row[headers.indexOf("operates_on_thursdays")] === operatesOnThursdays) ||
-         (row[headers.indexOf("operates_on_fridays")] === operatesOnFridays) ||
-         (row[headers.indexOf("operates_on_saturdays")] === operatesOnSaturdays) ||
-         (row[headers.indexOf("operates_on_sundays")] === operatesOnSundays) ||
-         (row[headers.indexOf("bank_holidays")] === bankHolidays)
-        ) // TODO: Filter by start and end time
+      .filter(
+        (row) =>
+          row[headers.indexOf("unique_journey_identifier")] ===
+            uniqueJourneyIdentifier &&
+          row[headers.indexOf("route_direction")] === routeDirection &&
+          (row[headers.indexOf("operates_on_mondays")] === operatesOnMondays ||
+            row[headers.indexOf("operates_on_tuesdays")] ===
+              operatesOnTuesdays ||
+            row[headers.indexOf("operates_on_wednesdays")] ===
+              operatesOnWednesdays ||
+            row[headers.indexOf("operates_on_thursdays")] ===
+              operatesOnThursdays ||
+            row[headers.indexOf("operates_on_fridays")] === operatesOnFridays ||
+            row[headers.indexOf("operates_on_saturdays")] ===
+              operatesOnSaturdays ||
+            row[headers.indexOf("operates_on_sundays")] === operatesOnSundays ||
+            row[headers.indexOf("bank_holidays")] === bankHolidays), // TODO: Filter by start and end time
       );
 
     if (!journeyData || journeyData.length === 0) {
@@ -72,5 +79,4 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
     }
 
     console.log("Journey Data:", journeyData);
-
   });
