@@ -58,6 +58,9 @@ function loadMaps() {
   } else if (path.includes("/routes.html")) {
     console.log("Initializing map for routes page.");
     initRouteMap(map);
+  } else if (path.includes("/visualise.html")) {
+    console.log("Initializing map for visualise page.");
+    initVisualiseMap(map);
   } else {
     console.log("No further map configuration needed for this page.");
   }
@@ -493,6 +496,18 @@ function initRouteMap(map) {
 }
 
 /**
+ * Function to initialize the Leaflet map for visualising journeys.
+ *
+ * @param {L.Map} map - The Leaflet Map object to initialize for visualising journeys.
+ */
+function initVisualiseMap(map) {
+  // Store the map instance globally for use in other functions
+  mapsPlaceholder.openlayersMap = map;
+
+  console.log("Visualise map initialized.");
+}
+
+/**
  * Function to remove any existing route from the OpenLayers map.
  */
 function removeRouteFromMap() {
@@ -593,6 +608,22 @@ function drawRouteOnMap(geojsonData, route, day, direction, variant) {
   // Fit the map view to the route extent
   const routeExtent = routeSource.getExtent();
   map.getView().fit(routeExtent, { duration: 1000, padding: [50, 50, 50, 50] });
+}
+
+/**
+ * Function to visualise a journey on the map.
+ *
+ * @param {object} journeyData
+ * @param {object} headers
+ */
+function visualiseJourneyOnMap(journeyData, headers) {
+  // Get the map instance
+  var map = mapsPlaceholder.openlayersMap;
+
+  // Remove any existing route layers
+  removeRouteFromMap();
+
+  alert("Journey visualisation is not yet implemented for OpenLayers maps.");
 }
 
 loadOpenLayers();

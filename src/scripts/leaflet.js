@@ -83,6 +83,9 @@ function loadMaps() {
   } else if (path.includes("/routes.html")) {
     console.log("Initializing map for routes page.");
     initRouteMap(map);
+  } else if (path.includes("/visualise.html")) {
+    console.log("Initializing map for visualise page.");
+    initVisualiseMap(map);
   } else {
     console.log("No further map configuration needed for this page.");
   }
@@ -366,6 +369,18 @@ function initRouteMap(map) {
 }
 
 /**
+ * Function to initialize the Leaflet map for visualising journeys.
+ *
+ * @param {L.Map} map - The Leaflet Map object to initialize for visualising journeys.
+ */
+function initVisualiseMap(map) {
+  // Store the map instance globally for use in other functions
+  mapsPlaceholder.leafletMap = map;
+
+  console.log("Visualise map initialized.");
+}
+
+/**
  * Function to remove any existing route from the Leaflet map.
  */
 function removeRouteFromMap() {
@@ -428,6 +443,22 @@ function drawRouteOnMap(geojsonData, route, day, direction, variant) {
 
   // Fit the map view to the route bounds
   map.fitBounds(routeLayer.getBounds());
+}
+
+/**
+ * Function to visualise a journey on the map.
+ *
+ * @param {object} journeyData
+ * @param {object} headers
+ */
+function visualiseJourneyOnMap(journeyData, headers) {
+  // Get the map instance
+  var map = mapsPlaceholder.leafletMap;
+
+  // Remove any existing route layers
+  removeRouteFromMap();
+
+  alert("Journey visualisation is not yet implemented for Leaflet maps.");
 }
 
 loadLeaflet();

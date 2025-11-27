@@ -163,4 +163,11 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
         </button>
       </div>
       `;
+
+    document
+      .getElementById("visualise-journey-button")
+      .addEventListener("click", () => {
+        // Run the visualisation with the journey data
+        visualiseJourneyOnMap(journeyData, headers);
+      });
   });
