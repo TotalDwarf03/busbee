@@ -183,7 +183,7 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
     });
 
     // Add stop names by fetching from stops dataset
-    fetch(`./datasets/stops/stops.geojson`)
+    fetch(`./datasets/stops/stops.json`)
       .then((response) => response.json())
       .then((stopsData) => {
         var stopsMap = {};

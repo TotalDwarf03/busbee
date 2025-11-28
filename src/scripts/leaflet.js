@@ -187,7 +187,7 @@ function initDefaultMap() {
  * @param {L.Control.Layers} layerControl - The Leaflet Layer Control to add heatmap layer to.
  */
 function initStopMap(map, layerControl) {
-  var geojsonStops = fetch("./datasets/stops/stops.geojson").then((response) =>
+  var geojsonStops = fetch("./datasets/stops/stops.json").then((response) =>
     response.json(),
   );
 
@@ -514,7 +514,7 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
       // Now that the journey data has coordinates, we need to load the route on the map
       // We need to collect this from the routes dataset
 
-      fetch("./datasets/routes/routes.geojson")
+      fetch("./datasets/routes/routes.json")
         .then((response) => response.json())
         .then((routesData) => {
           // Filter the points for the selected service ID

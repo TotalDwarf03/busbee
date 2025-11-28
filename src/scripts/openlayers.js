@@ -162,8 +162,8 @@ function initDefaultMap() {
  * @param {ol.Map} map - The OpenLayers Map object to initialize for stops.
  */
 function initStopMap(map) {
-  const geojsonStops = fetch("./datasets/stops/stops.geojson").then(
-    (response) => response.json(),
+  const geojsonStops = fetch("./datasets/stops/stops.json").then((response) =>
+    response.json(),
   );
 
   geojsonStops.then((data) => {
@@ -276,7 +276,7 @@ function initStopMap(map) {
   // Add a stops heatmap layer
   const heatmapLayer = new ol.layer.Heatmap({
     source: new ol.source.Vector({
-      url: "./datasets/stops/stops.geojson",
+      url: "./datasets/stops/stops.json",
       format: new ol.format.GeoJSON(),
     }),
     blur: 15,
@@ -665,7 +665,7 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
       // Now that the journey data has coordinates, we need to load the route on the map
       // We need to collect this from the routes dataset
 
-      fetch("./datasets/routes/routes.geojson")
+      fetch("./datasets/routes/routes.json")
         .then((response) => response.json())
         .then((routesData) => {
           // Filter the points for the selected service ID

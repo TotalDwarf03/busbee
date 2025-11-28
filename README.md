@@ -14,15 +14,24 @@ TODO: Add deployment link here
 
 ## Features
 
-TODO: Add features list here
+- Interactive map visualisations of bus routes and stops across Greater Manchester.
+- Integration of bus timetables for easy access to schedule information.
+- Use of Leaflet and OpenLayers libraries for advanced mapping capabilities.
+- View pollution emission layers using WMS services.
 
 ## Getting Started
 
-TODO: Add getting started instructions here
+To get started with the BusBee project, you can simply clone the repository and open the `index.html` file in your web browser.
 
 ## Datasets
 
 For information on the datasets used in this project, please refer to the `README` in the [`datasets` directory](./src/datasets/README.md).
+
+## Student Webserver Compatibility Tweaks (USW)
+
+Unfortunately, a few changes have been made to the project in order to get it working on the USW student webserver. These changes are noted below:
+
+- **File Types:** The student webserver has restrictions on certain file types, geojson files in particular. To work around this, all geojson files have been converted to standard `.json` files.
 
 ## Linting and Formatting
 

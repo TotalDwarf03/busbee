@@ -37,7 +37,7 @@ function applyFilters() {
   }
 
   // Get the routes GeoJSON
-  fetch("./datasets/routes/routes.geojson")
+  fetch("./datasets/routes/routes.json")
     .then((response) => response.json())
     .then((data) => {
       // Filter the routes based on selected criteria
@@ -105,7 +105,7 @@ function populatePage() {
   let routesData = null;
 
   // Fetch and store the GeoJSON data
-  fetch("./datasets/routes/routes.geojson")
+  fetch("./datasets/routes/routes.json")
     .then((response) => response.json())
     .then((data) => {
       routesData = data;
