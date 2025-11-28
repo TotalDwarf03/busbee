@@ -537,6 +537,15 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
               },
             }).addTo(map);
 
+            // Add markers for the start and end points
+            const startMarker = L.marker(stopCoordinates[0]).addTo(map);
+            startMarker.bindPopup("<b>Journey Start Point</b>");
+
+            const endMarker = L.marker(
+              stopCoordinates[stopCoordinates.length - 1],
+            ).addTo(map);
+            endMarker.bindPopup("<b>Journey End Point</b>");
+
             // Draw the route on the map
             const track = new L.TrackPlayer(stopCoordinates, {
               markerIcon: L.icon({
