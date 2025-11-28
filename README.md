@@ -1,6 +1,6 @@
 # BusBee
 
-![BusBee Logo](./assets/busbee-thumbnail.png)
+![BusBee Logo](./src/assets/busbee-thumbnail.png)
 
 BusBee is a spatially enabled website that visualises bus routes, stops and timetables across Greater Manchester using the Leaflet and OpenLayers libraries.
 

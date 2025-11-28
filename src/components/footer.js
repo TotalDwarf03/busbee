@@ -38,7 +38,7 @@ class CustomFooter extends HTMLElement {
       </p>
       <img
         class="footer-img"
-        src="../assets/busbee-logo-hori-large.png"
+        src="./assets/busbee-logo-hori-large.png"
         alt="BusBee"
       />
     </footer>
