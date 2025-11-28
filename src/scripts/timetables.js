@@ -30,9 +30,10 @@ const route = urlParams.get("route");
 const direction = urlParams.get("direction");
 const variant = urlParams.get("variant");
 const day = urlParams.get("day");
+const serviceID = urlParams.get("ServiceID");
 
 // If any of the parameters are missing, alert the user and redirect to the routes page
-if (!route || !direction || !variant || !day) {
+if (!route || !direction || !variant || !day || !serviceID) {
   alert("Missing required parameters. Redirecting to routes page.");
   window.location.href = "./routes.html";
 }
@@ -403,6 +404,7 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
               end_time: run.end.time,
               start_stop: run.start.stop_name,
               end_stop: run.end.stop_name,
+              ServiceID: serviceID,
             });
 
             const li = document.createElement("li");
@@ -435,6 +437,7 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
               end_time: run.end.time,
               start_stop: run.start.stop_name,
               end_stop: run.end.stop_name,
+              ServiceID: serviceID,
             });
 
             const li = document.createElement("li");

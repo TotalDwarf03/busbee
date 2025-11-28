@@ -211,10 +211,10 @@ function populatePage() {
 
     // Update the route details div
     routeDetailsDiv.innerHTML = `
-            <p>
-                Route <strong>${selectedRoute}</strong> has <strong>${routeCount}</strong> variation(s).
-            </p>
-        `;
+        <p>
+            Route <strong>${selectedRoute}</strong> has <strong>${routeCount}</strong> variation(s).
+        </p>
+    `;
 
     // Set default selections
     for (const radio of dayRadio) {
@@ -232,6 +232,13 @@ function populatePage() {
     }
 
     variationSelect.value = "Standard Variant";
+
+    // Enable the rest of the UI now that a route is selected
+    document.getElementById("disabled-container").removeAttribute("disabled");
+    const selectRoutePrompt = document.getElementById("select-route-prompt");
+    if (selectRoutePrompt) {
+      selectRoutePrompt.style.display = "none";
+    }
 
     // Now that the route is selected, and the UI has been populated,
     // We can now call applyFilters to update the map

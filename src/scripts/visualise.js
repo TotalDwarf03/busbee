@@ -16,6 +16,7 @@ const startTime = urlParams.get("start_time");
 const endTime = urlParams.get("end_time");
 const startStop = urlParams.get("start_stop");
 const endStop = urlParams.get("end_stop");
+const serviceID = urlParams.get("ServiceID");
 
 // Convert passed times to Date objects
 const startTimeDate = new Date(`1970-01-01T${startTime}`);
@@ -37,7 +38,8 @@ if (
   !startTime ||
   !endTime ||
   !startStop ||
-  !endStop
+  !endStop ||
+  !serviceID
 ) {
   alert("Missing required query parameters. Returning to routes page.");
   window.location.href = "./routes.html";
@@ -107,16 +109,16 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
 
         // Check operates on any selected day or bank holiday
         if (
-          row[headers.indexOf("operates_on_mondays")] != operatesOnMondays &&
-          row[headers.indexOf("operates_on_tuesdays")] != operatesOnTuesdays &&
+          row[headers.indexOf("operates_on_mondays")] != operatesOnMondays ||
+          row[headers.indexOf("operates_on_tuesdays")] != operatesOnTuesdays ||
           row[headers.indexOf("operates_on_wednesdays")] !=
-            operatesOnWednesdays &&
+            operatesOnWednesdays ||
           row[headers.indexOf("operates_on_thursdays")] !=
-            operatesOnThursdays &&
-          row[headers.indexOf("operates_on_fridays")] != operatesOnFridays &&
+            operatesOnThursdays ||
+          row[headers.indexOf("operates_on_fridays")] != operatesOnFridays ||
           row[headers.indexOf("operates_on_saturdays")] !=
-            operatesOnSaturdays &&
-          row[headers.indexOf("operates_on_sundays")] != operatesOnSundays &&
+            operatesOnSaturdays ||
+          row[headers.indexOf("operates_on_sundays")] != operatesOnSundays ||
           row[headers.indexOf("bank_holidays")] !== bankHolidays
         ) {
           return false;
@@ -155,12 +157,15 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
 
     // Update the page with journey data
     document.getElementById("route-description").innerHTML = `
+      <h3>Journey Summary</h3>
       <p>The selected journey makes <strong>${journeyData.length} stops</strong> between <strong>${startStop}</strong> and <strong>${endStop}</strong>, starting at <strong>${startTime.substring(0, 5)}</strong> and ending at <strong>${endTime.substring(0, 5)}</strong>.</p>
-      <p>Click the button below to visualise the journey on the map:</p>
-      <div style="width: 100%; text-align: center;">
-        <button id="visualise-journey-button">
-          <i class="fas fa-play-circle" aria-hidden="true"></i> Visualise Journey
-        </button>
+      <div id="journey-summary-inputs">
+        <p>Click the button below to visualise the journey on the map:</p>
+        <div style="width: 100%; text-align: center;">
+          <button id="visualise-journey-button">
+            <i class="fas fa-play-circle" aria-hidden="true"></i> Load Visualisation
+          </button>
+        </div>
       </div>
       `;
 
@@ -168,6 +173,6 @@ fetch(`./datasets/timetables/processed_timetables/${route}_BUS_timetable.csv`)
       .getElementById("visualise-journey-button")
       .addEventListener("click", () => {
         // Run the visualisation with the journey data
-        visualiseJourneyOnMap(journeyData, headers);
+        visualiseJourneyOnMap(journeyData, headers, serviceID);
       });
   });

@@ -81,9 +81,50 @@
           <!-- Route Description -->
         </blockquote>
 
-        <div id="map" style="height: 400px; width: 100%">
+        <blockquote
+          id="loading-visualisation"
+          style="margin-bottom: 1rem; display: none"
+        >
+          <span
+            ><i class="fas fa-spinner fa-spin"></i> Loading
+            visualisation...</span
+          >
+        </blockquote>
+
+        <div id="map" style="height: 600px; width: 100%" disabled>
           <!-- Map will be rendered here -->
         </div>
+
+        <blockquote style="margin-top: 1rem">
+          <div style="margin-bottom: 1rem">
+            <h3>
+              <i class="fas fa-info-circle" aria-hidden="true"></i> Data
+              Constraints, Limitations and Inconsistencies
+            </h3>
+          </div>
+          <p>
+            Unfortunately, this visualisation highlights the inconsistencies in
+            the datasets. On the map, you will notice that the bus route does
+            not follow the actual path of the bus as it travels along roads.
+          </p>
+          <p>
+            This is because the route dataset (which does follow the roads) is
+            not ordered correctly in line with the timetables and stop
+            sequences. As a result, the visualisation connects the bus stops in
+            a straight line, rather than following the actual roads.
+          </p>
+          <p>
+            To compensate for this, I have plotted the real route on the map in
+            green, while the bus's movement is shown in blue. This way, you can
+            see the intended path of the bus, even though the visualisation does
+            not accurately reflect the bus's journey along the roads.
+          </p>
+          <p>
+            There is information within the dataset documentation that suggests
+            a way of fixing this inconsistency, but I have not yet implemented
+            this due to coursework time constraints.
+          </p>
+        </blockquote>
       </article>
     </main>
 

@@ -74,6 +74,61 @@ The new `Service` attribute allows us to easily load the correct timetable for e
 
 The original shapefile dataset uses the British National Grid (EPSG:27700) coordinate reference system. For consistency with other datasets and to facilitate web mapping applications, the dataset was reprojected to WGS 84 (EPSG:4326).
 
+##### Add Points Along Route
+
+To allow the website to visualise bus movement along the routes, a series of points were generated along each bus route at regular intervals. These points serve as waypoints for animating bus movement on the map.
+
+To do this in QGIS, the following steps were taken:
+
+1. Load the reprojected bus routes layer into QGIS.
+2. Use the "Points Along Geometry" tool found in the Processing Toolbox under Vector Geometry.
+3. In the "Points Along Geometry" dialog:
+   1. Set the Input layer to the bus routes layer.
+   2. Set the Distance between points to `0.001` degrees. I believe this is accurate enough for visualisation purposes without creating an excessive number of points.
+   3. Choose an appropriate output location and format (e.g., GeoJSON).
+4. Click Run to generate the points along each bus route.
+5. The resulting layer contains points along each bus route, which can be used for visualising bus movement.
+
+This layer was then exported to a GeoJSON file for use in the frontend application (`./routes/route-points.geojson`).
+
+**Note:** Unfortunately, this dataset is never actually used in the frontend application as I was unable to complete the final step of ensuring that the points were in the correct order along each route (see below). However, I have documented the intended process for completeness.
+
+##### Fixing Point Order to Match Route (Not Completed)
+
+**Note:** This step has not been completed since the effort is not worth it for the coursework. However, I am documenting it here for completeness. The following process outlines how I _would_ have ensured that the points along each bus route are in the correct order for animating bus movement - if I had the time to implement it.
+
+To ensure that the points generated along each bus route are in the correct order for animating bus movement, the points would be sorted based on their distance along the route.
+
+This requires creating a line geometry for each bus timetable route and then calculating the distance from the start of the route to each point. The points can then be ordered based on this distance.
+
+Since the bus timetable would provide the sequence of stops, we can use this information to ensure that the points are ordered correctly.
+
+Once the timetable line geometries are created, the following steps would be taken in QGIS:
+
+1. Load both the bus timetable lines and the generated points layers into QGIS.
+2. Open the attribute table for the points layer and start the Field Calculator.
+3. Create a new field named `distance_along_route`.
+4. Use the following expression to calculate the distance from the start of the route to each point:
+
+   ```sql
+   line_locate_point(geometry:=geometry(get_feature('<timetable_lines_layer>', 'ServiceID', "ServiceID")), point:=$geometry)
+   ```
+
+   Replace `'<timetable_lines_layer>'` with the actual name of the bus timetable lines layer in QGIS.
+
+5. Click OK to apply the changes and calculate the distances.
+6. Next, use "add autoincremental field" tool to create an `order` field based on the `distance_along_route` field (This is found in Processing Toolbox > Vector Geometry).
+7. In the "Add autoincremental field" dialog:
+   1. Set the Input layer to the points layer.
+   2. Set the Sort by field to `distance_along_route`.
+   3. Set the Output field name to `order`.
+8. Click Run to generate the ordered field.
+9. Finally, export the modified points layer to a new GeoJSON file.
+
+This file would then get loaded into the frontend application to visualise bus movement along the routes in the correct order.
+
+**On an aside:** It is quite disappointing that the route lines that Transport for Greater Manchester provide are not ordered correctly to match the bus timetables. This would have made this process much easier and I would've been able to complete it in the time available _sigh_.
+
 ### GM Bus Stopping Points
 
 **Source:** [GM Bus Stopping Points Dataset](https://www.data.gov.uk/dataset/05252e3a-acdf-428b-9314-80ac7b17ab76/bus-stopping-points)

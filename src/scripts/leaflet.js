@@ -85,7 +85,17 @@ function loadMaps() {
     initRouteMap(map);
   } else if (path.includes("/visualise.html")) {
     console.log("Initializing map for visualise page.");
-    initVisualiseMap(map);
+
+    // Load Leaflet TrackPlayer Plugin
+    console.log("Loading Leaflet TrackPlayer plugin...");
+    const trackPlayerScript = document.createElement("script");
+    trackPlayerScript.src =
+      "./scripts/plugins/trackplayer/leaflet-trackplayer.umd.cjs";
+    document.head.appendChild(trackPlayerScript);
+    trackPlayerScript.onload = () => {
+      console.log("Leaflet TrackPlayer plugin loaded.");
+      initVisualiseMap(map, layerControl);
+    };
   } else {
     console.log("No further map configuration needed for this page.");
   }
@@ -372,10 +382,14 @@ function initRouteMap(map) {
  * Function to initialize the Leaflet map for visualising journeys.
  *
  * @param {L.Map} map - The Leaflet Map object to initialize for visualising journeys.
+ * @param {L.Control.Layers} layerControl - The Leaflet Layer Control to add journey layers to.
  */
-function initVisualiseMap(map) {
+function initVisualiseMap(map, layerControl) {
   // Store the map instance globally for use in other functions
   mapsPlaceholder.leafletMap = map;
+
+  // Store the layer control globally for use in other functions
+  mapsPlaceholder.leafletLayerControl = layerControl;
 
   console.log("Visualise map initialized.");
 }
@@ -435,6 +449,8 @@ function drawRouteOnMap(geojsonData, route, day, direction, variant) {
       variant +
       "&day=" +
       day +
+      "&ServiceID=" +
+      geojsonData.properties.ServiceID +
       "\"'>View Timetable</button>",
   );
 
@@ -448,17 +464,276 @@ function drawRouteOnMap(geojsonData, route, day, direction, variant) {
 /**
  * Function to visualise a journey on the map.
  *
- * @param {object} journeyData
- * @param {object} headers
+ * @param {object} journeyData - The journey data to visualise.
+ * @param {object} headers - The headers corresponding to the journey data.
+ * @param {string} serviceID - The service ID of the journey to visualise.
  */
-function visualiseJourneyOnMap(journeyData, headers) {
+function visualiseJourneyOnMap(journeyData, headers, serviceID) {
   // Get the map instance
   var map = mapsPlaceholder.leafletMap;
+
+  // Show loading visualisation message
+  document.getElementById("loading-visualisation").style.display = "";
 
   // Remove any existing route layers
   removeRouteFromMap();
 
-  alert("Journey visualisation is not yet implemented for Leaflet maps.");
+  // Get the coordinates from the journey data
+  fetch("./datasets/naptan_stops.csv")
+    .then((response) => response.text())
+    .then((csvText) => {
+      // Parse CSV data
+      const csvLines = csvText.split("\n");
+      const naptanHeaders = csvLines[0].split(",");
+
+      for (const journeyPoint of journeyData) {
+        const atcoCode = journeyPoint[headers.indexOf("location")];
+
+        // Find the corresponding row in the Naptan CSV
+        const stopRow = csvLines.find((line) => {
+          const columns = line.split(",");
+          return columns[0] === atcoCode;
+        });
+
+        if (stopRow) {
+          // Extract latitude and longitude
+          const stopColumns = stopRow.split(",");
+          const latitude =
+            parseFloat(stopColumns[naptanHeaders.indexOf("Latitude")]) || 0;
+          const longitude =
+            parseFloat(stopColumns[naptanHeaders.indexOf("Longitude")]) || 0;
+
+          // Update the journey point with coordinates
+          journeyPoint.push([latitude, longitude]);
+        }
+      }
+
+      // Now that the journey data has coordinates, we need to update the headers as well
+      headers.push("coordinates");
+
+      // Now that the journey data has coordinates, we need to load the route on the map
+      // We need to collect this from the routes dataset
+
+      fetch("./datasets/routes/routes.geojson")
+        .then((response) => response.json())
+        .then((routesData) => {
+          // Filter the points for the selected service ID
+          const route = routesData.features.find(
+            (feature) => feature.properties.ServiceID === serviceID,
+          );
+
+          if (route) {
+            // Create a list of bus stop coordinates for the journey
+            const stopCoordinates = journeyData
+              .map((point) => point[headers.indexOf("coordinates")])
+              .filter((coord) => coord); // Filter out any undefined coordinates
+
+            // Draw the route on the map as a GeoJSON layer
+            const routeLayer = L.geoJSON(route, {
+              style: {
+                color: "green",
+                weight: 5,
+                opacity: 0.7,
+              },
+            }).addTo(map);
+
+            // Draw the route on the map
+            const track = new L.TrackPlayer(stopCoordinates, {
+              markerIcon: L.icon({
+                iconUrl: "./assets/bus-icon.png",
+                iconSize: [24, 24],
+                iconAnchor: [12, 12],
+              }),
+              markerRotation: false,
+            }).addTo(map);
+
+            // Store the route layer on the map instance for future reference
+            map._routeLayer = track;
+
+            // Add an isPlaying attribute to the track for easier checking
+            track.isPlaying = false;
+
+            // Pan the map to focus on the starting point
+            map.setView(stopCoordinates[0], 16);
+
+            // Add play/pause control
+            const trackControl = L.control({ position: "bottomleft" });
+            trackControl.onAdd = function () {
+              const div = L.DomUtil.create("div", "track-control");
+              div.innerHTML = `
+                <button id="track-play-pause" style="font-size:16px; padding:8px;"><i class="fas fa-play" aria-hidden="true"></i> Play</button>
+              `;
+              return div;
+            };
+            trackControl.addTo(map);
+
+            // Handle play/pause button click
+            document
+              .getElementById("track-play-pause")
+              .addEventListener("click", function () {
+                if (track.isPlaying) {
+                  track.pause();
+                  track.isPlaying = false;
+                  this.innerHTML =
+                    '<i class="fas fa-play" aria-hidden="true"></i> Play';
+                } else {
+                  track.start();
+                  track.isPlaying = true;
+                  this.innerHTML =
+                    '<i class="fas fa-pause" aria-hidden="true"></i> Pause';
+                }
+              });
+
+            // Zoom the map in to focus more closely on the route when the visualisation starts
+            track.on("start", () => {
+              map.setView(stopCoordinates[0], 16);
+            });
+
+            // Add the nerd stats overlay
+            const nerdStats = L.control({ position: "bottomright" });
+            nerdStats.onAdd = function () {
+              const div = L.DomUtil.create("div", "nerd-stats");
+              div.innerHTML = `
+                <blockquote style="margin: 0;">
+                  <h4 style="padding: 0;">Journey Visualisation Stats</h4>
+                  <div id="stats-content"></div>
+                    <b>Progress:</b> <span id="stat-progress">0%</span><br>
+                    <b>Current Position:</b> <span id="stat-position">N/A</span><br>
+                    <b>Stops Visited:</b> <span id="stat-stops">0 / ${journeyData.length}</span>
+                  </div>
+                </blockquote>
+`;
+              return div;
+            };
+
+            // Add the nerd stats control to the map
+            nerdStats.addTo(map);
+
+            // Create a list to log the stop points reached
+            const stopsReached = [];
+
+            // Add progress event listener to deal with bus stop pauses and updating stats
+            track.on("progress", (progress, { lng, lat }, index) => {
+              // Update nerd stats
+              document.getElementById("stat-progress").innerText =
+                (progress * 100).toFixed(2) + "%";
+              document.getElementById("stat-position").innerText =
+                lat.toFixed(5) + ", " + lng.toFixed(5);
+              document.getElementById("stat-stops").innerText = `${
+                stopsReached.length
+              } / ${journeyData.length}`;
+
+              // Deal with stop points
+              // If the current point is a stop, pause for 2 seconds
+              const stopCoord = journeyData.find((point) => {
+                const coords = point[headers.indexOf("coordinates")];
+                return (
+                  coords &&
+                  Math.abs(coords[0] - lat) < 0.0005 &&
+                  Math.abs(coords[1] - lng) < 0.0005
+                );
+              });
+
+              if (stopCoord && !stopsReached.includes(stopCoord)) {
+                track.pause();
+
+                // Collect relevant stop information and display in popup
+
+                // 1. Get the ATCO code of the current stop
+                const atcoCode = stopCoord[headers.indexOf("location")];
+
+                // 2. Find the stop details from the Naptan CSV
+                const stopRow = csvLines.find((line) => {
+                  const columns = line.split(",");
+                  return columns[0] === atcoCode;
+                });
+
+                // 3. Extract relevant details from Naptan CSV
+                const row = stopRow.split(",");
+
+                const commonName = row[naptanHeaders.indexOf("CommonName")];
+                const street = row[naptanHeaders.indexOf("Street")];
+                const locality = row[naptanHeaders.indexOf("LocalityName")];
+                const parentLocality =
+                  row[naptanHeaders.indexOf("ParentLocalityName")];
+                const grandparentLocality =
+                  row[naptanHeaders.indexOf("GrandParentLocalityName")];
+
+                // 4. Collect time information from the journey data
+                const arrivalTime =
+                  stopCoord[headers.indexOf("published_arrival_time")] || "N/A";
+                const departureTime =
+                  stopCoord[headers.indexOf("published_departure_time")] ||
+                  "N/A";
+
+                // Add a popup at the stop location
+                const stopPopup = L.popup({
+                  closeOnClick: false,
+                  autoClose: true,
+                })
+                  .setLatLng([lat, lng])
+                  .setContent(
+                    "<h4>Bus Stop Reached</h4>" +
+                      "<b>Stop Name:</b> " +
+                      commonName +
+                      "<br><b>ATCO Code:</b> " +
+                      atcoCode +
+                      "<br><b>Street:</b> " +
+                      street +
+                      "<br><b>Locality:</b> " +
+                      locality +
+                      "<br><b>Parent Locality:</b> " +
+                      parentLocality +
+                      "<br><b>Grandparent Locality:</b> " +
+                      grandparentLocality +
+                      "<hr style='margin: 0.25rem 0'>" +
+                      "<b>Arrival Time:</b> " +
+                      arrivalTime +
+                      "<br><b>Departure Time:</b> " +
+                      departureTime,
+                  )
+                  .openOn(map);
+
+                // Drop a bus stop marker at the stop location
+                const stopMarker = L.marker([lat, lng], {
+                  icon: L.icon({
+                    iconUrl: "./assets/bus-stop-icon.png",
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 32],
+                  }),
+                }).addTo(map);
+
+                // After 4 seconds, close the popup and resume the track
+
+                setTimeout(() => {
+                  if (track.isPlaying) {
+                    map.closePopup(stopPopup);
+                    stopsReached.push(stopCoord);
+                    track.start();
+                  }
+                }, 4000); // Pause for 4 seconds
+              }
+            });
+
+            // Hide loading visualisation message
+            document.getElementById("loading-visualisation").style.display =
+              "none";
+
+            // Reenable the map
+            document.getElementById("map").removeAttribute("disabled");
+
+            // Hide summary inputs div since visualisation has started
+            document.getElementById("journey-summary-inputs").style.display =
+              "none";
+
+            // Scroll to the map
+            document.getElementById("map").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        });
+    });
 }
 
 loadLeaflet();
