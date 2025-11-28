@@ -91,7 +91,7 @@ To do this in QGIS, the following steps were taken:
 
 This layer was then exported to a GeoJSON file for use in the frontend application (`./routes/route-points.geojson`).
 
-**Note:** Unfortunately, this dataset is never actually used in the frontend application as I was unable to complete the final step of ensuring that the points were in the correct order along each route (see below). However, I have documented the intended process for completeness.
+**Note:** Unfortunately, this dataset is never actually used in the frontend application - nor has it been added to source control - as I was unable to complete the final step of ensuring that the points were in the correct order along each route (see below). However, I have documented the intended process for completeness.
 
 ##### Fixing Point Order to Match Route (Not Completed)
 
