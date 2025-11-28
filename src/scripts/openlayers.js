@@ -589,6 +589,8 @@ function drawRouteOnMap(geojsonData, route, day, direction, variant) {
           variant +
           "&day=" +
           day +
+          "&ServiceID=" +
+          geojsonData.properties.ServiceID +
           "\"'>View Timetable</button>";
         overlayContainerElement.style =
           "background-color: white; padding: 5px; border: 1px solid black;";
@@ -613,17 +615,279 @@ function drawRouteOnMap(geojsonData, route, day, direction, variant) {
 /**
  * Function to visualise a journey on the map.
  *
- * @param {object} journeyData
- * @param {object} headers
+ * @param {object} journeyData - The journey data to visualise.
+ * @param {object} headers - The headers corresponding to the journey data.
+ * @param {string} serviceID - The service ID of the journey to visualise.
  */
-function visualiseJourneyOnMap(journeyData, headers) {
+function visualiseJourneyOnMap(journeyData, headers, serviceID) {
   // Get the map instance
   var map = mapsPlaceholder.openlayersMap;
+
+  // Show loading visualisation message
+  document.getElementById("loading-visualisation").style.display = "";
 
   // Remove any existing route layers
   removeRouteFromMap();
 
-  alert("Journey visualisation is not yet implemented for OpenLayers maps.");
+  // Get the coordinates from the journey data
+  fetch("./datasets/naptan_stops.csv")
+    .then((response) => response.text())
+    .then((csvText) => {
+      // Parse CSV data
+      const csvLines = csvText.split("\n");
+      const naptanHeaders = csvLines[0].split(",");
+
+      for (const journeyPoint of journeyData) {
+        const atcoCode = journeyPoint[headers.indexOf("location")];
+
+        // Find the corresponding row in the Naptan CSV
+        const stopRow = csvLines.find((line) => {
+          const columns = line.split(",");
+          return columns[0] === atcoCode;
+        });
+
+        if (stopRow) {
+          // Extract latitude and longitude
+          const stopColumns = stopRow.split(",");
+          const latitude =
+            parseFloat(stopColumns[naptanHeaders.indexOf("Latitude")]) || 0;
+          const longitude =
+            parseFloat(stopColumns[naptanHeaders.indexOf("Longitude")]) || 0;
+
+          // Update the journey point with coordinates
+          journeyPoint.push([latitude, longitude]);
+        }
+      }
+
+      // Now that the journey data has coordinates, we need to update the headers as well
+      headers.push("coordinates");
+
+      // Now that the journey data has coordinates, we need to load the route on the map
+      // We need to collect this from the routes dataset
+
+      fetch("./datasets/routes/routes.geojson")
+        .then((response) => response.json())
+        .then((routesData) => {
+          // Filter the points for the selected service ID
+          const route = routesData.features.find(
+            (feature) => feature.properties.ServiceID === serviceID,
+          );
+
+          if (route) {
+            // Create a list of bus stop coordinates for the journey
+            const stopCoordinates = journeyData
+              .map((point) => point[headers.indexOf("coordinates")])
+              .filter((coord) => coord); // Filter out any undefined coordinates
+
+            // Draw the route on the map as a GeoJSON layer
+            const routeLayer = new ol.layer.Vector({
+              source: new ol.source.Vector({
+                features: new ol.format.GeoJSON().readFeatures(route, {
+                  featureProjection: "EPSG:3857",
+                }),
+              }),
+              style: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                  color: "green",
+                  width: 4,
+                  opacity: 0.7,
+                }),
+              }),
+            });
+            map.addLayer(routeLayer);
+
+            // Draw the route on the map
+            // Prereqs for animation
+            // Convert stop coordinates to map projection
+            const stopCoordinatesProjected = stopCoordinates.map((coord) =>
+              ol.proj.fromLonLat([coord[1], coord[0]]),
+            );
+
+            // 1. Draw a polyline on the map using stopCoordinates
+            const track = new ol.Feature({
+              type: "track",
+              geometry: new ol.geom.LineString(stopCoordinatesProjected),
+            });
+
+            // 2. Add a start and end marker for the route
+            const startMarker = new ol.Feature({
+              type: "marker",
+              geometry: new ol.geom.Point(stopCoordinatesProjected[0]),
+            });
+
+            const endMarker = new ol.Feature({
+              type: "marker",
+              geometry: new ol.geom.Point(
+                stopCoordinatesProjected[stopCoordinatesProjected.length - 1],
+              ),
+            });
+
+            // 3. Add a moving marker for the bus
+            const position = startMarker.getGeometry().clone();
+            const geoMarker = new ol.Feature({
+              type: "geoMarker",
+              geometry: position,
+            });
+
+            const styles = {
+              track: new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                  color: "#0000FF",
+                  width: 6,
+                }),
+              }),
+              geoMarker: new ol.style.Style({
+                image: new ol.style.Circle({
+                  radius: 7,
+                  fill: new ol.style.Fill({ color: "black" }),
+                  stroke: new ol.style.Stroke({
+                    color: "white",
+                    width: 2,
+                  }),
+                }),
+              }),
+              marker: new ol.style.Style({
+                image: new ol.style.Icon({
+                  anchor: [0.5, 1],
+                  src: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+                  scale: 0.07,
+                }),
+              }),
+            };
+
+            // 4. Create a vector layer to hold the track and markers
+            const vectorLayer = new ol.layer.Vector({
+              source: new ol.source.Vector({
+                features: [track, startMarker, endMarker, geoMarker],
+              }),
+              style: function (feature) {
+                return styles[feature.get("type")];
+              },
+            });
+
+            map.addLayer(vectorLayer);
+
+            // Deal with animating the geoMarker along the route
+
+            // Create a custom button control for starting/stopping animation
+            const buttonElement = document.createElement("button");
+            buttonElement.className = "ol-start-button";
+            buttonElement.title = "Start Animation";
+            buttonElement.innerHTML = '<i class="fas fa-play"></i>';
+
+            const buttonControlDiv = document.createElement("div");
+            buttonControlDiv.className = "ol-control ol-unselectable";
+            buttonControlDiv.style.top = "10px";
+            buttonControlDiv.style.left = "10px";
+            buttonControlDiv.style.position = "absolute";
+            buttonControlDiv.appendChild(buttonElement);
+
+            const startButton = new ol.control.Control({
+              element: buttonControlDiv,
+            });
+
+            buttonElement.addEventListener("click", function () {
+              if (animating) {
+                stopAnimation();
+              } else {
+                startAnimation();
+              }
+            });
+
+            // Helper functions to update button state
+            startButton.setTitle = function (title) {
+              buttonElement.title = title;
+            };
+            startButton.setHTML = function (html) {
+              buttonElement.innerHTML = html;
+            };
+
+            map.addControl(startButton);
+
+            // Main animation logic
+
+            var animating = false;
+            var distance = 0;
+            let lastTime;
+
+            function moveFeature(event) {
+              const speed = 100;
+              const time = event.frameState.time;
+              const elapsedTime = time - lastTime;
+              distance = (distance + (speed * elapsedTime) / 1e6) % 2;
+              lastTime = time;
+
+              // Interpolate coordinate along the LineString
+              const coords = track.getGeometry().getCoordinates();
+              const totalSegments = coords.length - 1;
+              let segment = Math.floor(
+                (distance > 1 ? 2 - distance : distance) * totalSegments,
+              );
+              let segmentFraction =
+                (distance > 1 ? 2 - distance : distance) * totalSegments -
+                segment;
+              if (segment >= totalSegments) segment = totalSegments - 1;
+              const start = coords[segment];
+              const end = coords[segment + 1];
+              const currentCoordinate = [
+                start[0] + (end[0] - start[0]) * segmentFraction,
+                start[1] + (end[1] - start[1]) * segmentFraction,
+              ];
+              position.setCoordinates(currentCoordinate);
+              const vectorContext = ol.render.getVectorContext(event);
+              vectorContext.setStyle(styles.geoMarker);
+              vectorContext.drawGeometry(position);
+              map.render();
+            }
+
+            function startAnimation() {
+              animating = true;
+              lastTime = Date.now();
+
+              startButton.setTitle("Stop Animation");
+              startButton.setHTML('<i class="fas fa-stop"></i>');
+
+              vectorLayer.on("postrender", moveFeature);
+              geoMarker.setGeometry(null);
+            }
+
+            function stopAnimation() {
+              animating = false;
+
+              startButton.setTitle("Start Animation");
+              startButton.setHTML('<i class="fas fa-play"></i>');
+
+              // Keep marker at current position
+              geoMarker.setGeometry(position);
+              vectorLayer.un("postrender", moveFeature);
+            }
+
+            // Fit the map view to the route extent
+            const routeExtent = routeLayer.getSource().getExtent();
+            map.getView().fit(routeExtent, {
+              duration: 1000,
+              padding: [50, 50, 50, 50],
+            });
+
+            /// Hide loading visualisation message
+            document.getElementById("loading-visualisation").style.display =
+              "none";
+
+            // Reenable the map
+            document.getElementById("map").removeAttribute("disabled");
+
+            // Hide summary inputs div since visualisation has started
+            document.getElementById("journey-summary-inputs").style.display =
+              "none";
+
+            // Scroll to the map
+            document.getElementById("map").scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        });
+    });
 }
 
 loadOpenLayers();
