@@ -633,7 +633,7 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
               } / ${journeyData.length}`;
 
               // Deal with stop points
-              // If the current point is a stop, pause for 2 seconds
+              // If the current point is a stop, pause for 4 seconds and show popup
               const stopCoord = journeyData.find((point) => {
                 const coords = point[headers.indexOf("coordinates")];
                 return (

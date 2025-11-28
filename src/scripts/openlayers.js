@@ -737,13 +737,10 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
                 }),
               }),
               geoMarker: new ol.style.Style({
-                image: new ol.style.Circle({
-                  radius: 7,
-                  fill: new ol.style.Fill({ color: "black" }),
-                  stroke: new ol.style.Stroke({
-                    color: "white",
-                    width: 2,
-                  }),
+                image: new ol.style.Icon({
+                  anchor: [0.5, 0.5],
+                  src: "./assets/bus-icon.png",
+                  scale: 0.05,
                 }),
               }),
               marker: new ol.style.Style({
@@ -771,13 +768,15 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
 
             // Create a custom button control for starting/stopping animation
             const buttonElement = document.createElement("button");
-            buttonElement.className = "ol-start-button";
+            buttonElement.id = "track-play-pause";
+            buttonElement.style.fontSize = "16px";
+            buttonElement.style.padding = "8px";
             buttonElement.title = "Start Animation";
-            buttonElement.innerHTML = '<i class="fas fa-play"></i>';
+            buttonElement.innerHTML =
+              '<i class="fas fa-play" aria-hidden="true"></i> Play';
 
             const buttonControlDiv = document.createElement("div");
-            buttonControlDiv.className = "ol-control ol-unselectable";
-            buttonControlDiv.style.top = "10px";
+            buttonControlDiv.style.bottom = "10px";
             buttonControlDiv.style.left = "10px";
             buttonControlDiv.style.position = "absolute";
             buttonControlDiv.appendChild(buttonElement);
@@ -786,7 +785,25 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
               element: buttonControlDiv,
             });
 
+            // Add a blockquote to the map to show the animation is in progress
+            const infoBlockquote = document.createElement("blockquote");
+            infoBlockquote.id = "animation-info";
+            infoBlockquote.style.bottom = "10px";
+            infoBlockquote.style.left = "10px";
+            infoBlockquote.style.position = "absolute";
+            infoBlockquote.style.display = "none";
+            infoBlockquote.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Animation in progress...`;
+            const infoControl = new ol.control.Control({
+              element: infoBlockquote,
+            });
+            map.addControl(infoControl);
+
             buttonElement.addEventListener("click", function () {
+              // When the button is clicked for the first time,
+              // hide the button and show the animation info
+              infoBlockquote.style.display = "";
+              buttonControlDiv.style.display = "none";
+
               if (animating) {
                 stopAnimation();
               } else {
@@ -809,23 +826,29 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
             var animating = false;
             var distance = 0;
             let lastTime;
+            var stopsReached = [];
 
             function moveFeature(event) {
-              const speed = 100;
+              const speed = 40;
               const time = event.frameState.time;
               const elapsedTime = time - lastTime;
-              distance = (distance + (speed * elapsedTime) / 1e6) % 2;
+              distance = distance + (speed * elapsedTime) / 1e6;
               lastTime = time;
+
+              // Loop distance from 0 to 1 (restart from beginning)
+              // Also stop the animation so it doesn't endlessly loop
+              // Finally, reshow the start button and hide the animation info
+              if (distance > 1) {
+                stopAnimation();
+                buttonControlDiv.style.display = "";
+                infoBlockquote.style.display = "none";
+              }
 
               // Interpolate coordinate along the LineString
               const coords = track.getGeometry().getCoordinates();
               const totalSegments = coords.length - 1;
-              let segment = Math.floor(
-                (distance > 1 ? 2 - distance : distance) * totalSegments,
-              );
-              let segmentFraction =
-                (distance > 1 ? 2 - distance : distance) * totalSegments -
-                segment;
+              let segment = Math.floor(distance * totalSegments);
+              let segmentFraction = distance * totalSegments - segment;
               if (segment >= totalSegments) segment = totalSegments - 1;
               const start = coords[segment];
               const end = coords[segment + 1];
@@ -835,9 +858,110 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
               ];
               position.setCoordinates(currentCoordinate);
               const vectorContext = ol.render.getVectorContext(event);
-              vectorContext.setStyle(styles.geoMarker);
+              vectorContext.setStyle(
+                new ol.style.Style({
+                  image: new ol.style.Icon({
+                    anchor: [0.5, 0.5],
+                    src: "./assets/bus-icon.png",
+                    scale: 0.1,
+                  }),
+                }),
+              );
               vectorContext.drawGeometry(position);
-              map.render();
+
+              // Move the view to follow the marker
+              map.getView().setCenter(currentCoordinate);
+
+              // Deal with stop points
+              const lonLat = ol.proj.toLonLat(currentCoordinate);
+              const lng = lonLat[0];
+              const lat = lonLat[1];
+
+              // Deal with stop points
+              // If the current point is a stop, pause for 4 seconds and show popup
+              const stopCoord = journeyData.find((point) => {
+                const coords = point[headers.indexOf("coordinates")];
+                return (
+                  coords &&
+                  Math.abs(coords[0] - lat) < 0.0005 &&
+                  Math.abs(coords[1] - lng) < 0.0005
+                );
+              });
+
+              if (stopCoord && !stopsReached.includes(stopCoord)) {
+                // Pause the animation
+                stopAnimation();
+
+                // Collect relevant stop information and display in popup
+
+                // 1. Get the ATCO code of the current stop
+                const atcoCode = stopCoord[headers.indexOf("location")];
+
+                // 2. Find the stop details from the Naptan CSV
+                const stopRow = csvLines.find((line) => {
+                  const columns = line.split(",");
+                  return columns[0] === atcoCode;
+                });
+
+                // 3. Extract relevant details from Naptan CSV
+                const row = stopRow.split(",");
+
+                const commonName = row[naptanHeaders.indexOf("CommonName")];
+                const street = row[naptanHeaders.indexOf("Street")];
+                const locality = row[naptanHeaders.indexOf("LocalityName")];
+                const parentLocality =
+                  row[naptanHeaders.indexOf("ParentLocalityName")];
+                const grandparentLocality =
+                  row[naptanHeaders.indexOf("GrandParentLocalityName")];
+
+                // 4. Collect time information from the journey data
+                const arrivalTime =
+                  stopCoord[headers.indexOf("published_arrival_time")] || "N/A";
+                const departureTime =
+                  stopCoord[headers.indexOf("published_departure_time")] ||
+                  "N/A";
+
+                // Add a popup at the stop location
+                const stopPopup = new ol.Overlay({
+                  element: document.createElement("div"),
+                  positioning: "bottom-center",
+                  stopEvent: false,
+                  offset: [0, -30],
+                });
+                map.addOverlay(stopPopup);
+                stopPopup.setPosition(currentCoordinate);
+                stopPopup.getElement().innerHTML =
+                  "<b>Stop Name:</b> " +
+                  commonName +
+                  "<br><b>Address:</b> " +
+                  street +
+                  ", " +
+                  locality +
+                  (parentLocality ? ", " + parentLocality : "") +
+                  (grandparentLocality ? ", " + grandparentLocality : "") +
+                  "<br><b>Arrival Time:</b> " +
+                  arrivalTime +
+                  "<br><b>Departure Time:</b> " +
+                  departureTime;
+                stopPopup.getElement().style =
+                  "background-color: white; padding: 5px; border: 1px solid black;";
+
+                // Drop a bus stop marker at the stop location
+                const stopMarker = new ol.Feature({
+                  type: "marker",
+                  geometry: new ol.geom.Point(currentCoordinate),
+                });
+                stopMarker.setStyle(styles["marker"]);
+                vectorLayer.getSource().addFeature(stopMarker);
+
+                // After 4 seconds, close the popup and resume the track
+
+                setTimeout(() => {
+                  map.removeOverlay(stopPopup);
+                  stopsReached.push(stopCoord);
+                  startAnimation();
+                }, 4000); // Pause for 4 seconds
+              }
             }
 
             function startAnimation() {
@@ -845,7 +969,9 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
               lastTime = Date.now();
 
               startButton.setTitle("Stop Animation");
-              startButton.setHTML('<i class="fas fa-stop"></i>');
+              startButton.setHTML(
+                '<i class="fas fa-pause" aria-hidden="true"></i> Pause',
+              );
 
               vectorLayer.on("postrender", moveFeature);
               geoMarker.setGeometry(null);
@@ -855,18 +981,21 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
               animating = false;
 
               startButton.setTitle("Start Animation");
-              startButton.setHTML('<i class="fas fa-play"></i>');
+              startButton.setHTML(
+                '<i class="fas fa-play" aria-hidden="true"></i> Play',
+              );
 
               // Keep marker at current position
               geoMarker.setGeometry(position);
               vectorLayer.un("postrender", moveFeature);
             }
 
-            // Fit the map view to the route extent
-            const routeExtent = routeLayer.getSource().getExtent();
-            map.getView().fit(routeExtent, {
+            // Zoom the map in to focus on geoMarker
+            const geoMarkerExtent = geoMarker.getGeometry().getExtent();
+            map.getView().fit(geoMarkerExtent, {
               duration: 1000,
-              padding: [50, 50, 50, 50],
+              padding: [100, 100, 100, 100],
+              maxZoom: 15,
             });
 
             /// Hide loading visualisation message
@@ -879,6 +1008,9 @@ function visualiseJourneyOnMap(journeyData, headers, serviceID) {
             // Hide summary inputs div since visualisation has started
             document.getElementById("journey-summary-inputs").style.display =
               "none";
+
+            // Show the OpenLayers Note
+            document.getElementById("ol-visualisation-note").style.display = "";
 
             // Scroll to the map
             document.getElementById("map").scrollIntoView({
