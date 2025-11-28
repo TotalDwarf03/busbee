@@ -82,7 +82,7 @@ function initDefaultMap() {
         layers: [
           new ol.layer.Tile({
             title: "OpenStreetMap",
-            visible: false,
+            visible: true,
             type: "base",
             source: new ol.source.OSM(),
           }),
@@ -117,7 +117,7 @@ function initDefaultMap() {
           }),
           new ol.layer.Tile({
             title: "Stadia Alidade Smooth",
-            visible: true,
+            visible: false,
             type: "base",
             source: new ol.source.XYZ({
               url: "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png",

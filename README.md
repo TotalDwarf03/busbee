@@ -10,7 +10,9 @@ The curriculum for the module can be found here: [IS3S665 - GIS and the Spatial 
 
 ## Deployment
 
-TODO: Add deployment link here
+A deployed version of the tool is available to try at: [busbee.totaldwarf.dev](https://busbee.totaldwarf.dev).
+
+**Note:** The above URL redirects you to [Vercel](https://vercel.com/) deployment of the website.
 
 ## Features
 
