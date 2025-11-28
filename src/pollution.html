@@ -109,6 +109,76 @@
         to avoid cluttering the map.
       </p>
 
+      <blockquote>
+        <p>
+          <i class="fa fa-info-circle" aria-hidden="true"></i>
+          <b>Note:</b> Sometimes the WMS Server used to serve the pollution data
+          can be unavailable or slow to respond. This results in the pollution
+          layers not loading correctly.
+        </p>
+        <p>
+          If this is the case, when a layer is selected, the map will remain the
+          same. You can verify that the WMS server is unreachable by going to
+          the following URL in a new tab:
+        </p>
+        <ul>
+          <li>
+            <a
+              href="https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_CO2_viridis/MapServer/WMSServer?service=WMS&request=GetCapabilities"
+              target="_blank"
+              rel="noopener"
+            >
+              CO<sub>2</sub> Emissions WMS Server
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_NOx_viridis/MapServer/WMSServer?service=WMS&request=GetCapabilities"
+              target="_blank"
+              rel="noopener"
+            >
+              NO<sub>x</sub> Emissions WMS Server
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_PM2_5_viridis/MapServer/WMSServer?service=WMS&request=GetCapabilities"
+              target="_blank"
+              rel="noopener"
+            >
+              PM2.5 Emissions WMS Server
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_PM10_viridis/MapServer/WMSServer?service=WMS&request=GetCapabilities"
+              target="_blank"
+              rel="noopener"
+            >
+              PM10 Emissions WMS Server
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_CH4_viridis/MapServer/WMSServer?service=WMS&request=GetCapabilities"
+              target="_blank"
+              rel="noopener"
+            >
+              CH<sub>4</sub> Emissions WMS Server
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://naeimaps.rcdo.co.uk/naeiserver/services/NAEI_2023/2023_N2O_viridis/MapServer/WMSServer?service=WMS&request=GetCapabilities"
+              target="_blank"
+              rel="noopener"
+            >
+              N<sub>2</sub>O Emissions WMS Server
+            </a>
+          </li>
+        </ul>
+      </blockquote>
+
       <div id="map" style="height: 600px; width: 100%">
         <!-- Map will be rendered here -->
       </div>
