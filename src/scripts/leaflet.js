@@ -90,7 +90,7 @@ function loadMaps() {
     console.log("Loading Leaflet TrackPlayer plugin...");
     const trackPlayerScript = document.createElement("script");
     trackPlayerScript.src =
-      "./scripts/plugins/trackplayer/leaflet-trackplayer.umd.cjs";
+      "./scripts/plugins/trackplayer/leaflet-trackplayer.umd.js";
     document.head.appendChild(trackPlayerScript);
     trackPlayerScript.onload = () => {
       console.log("Leaflet TrackPlayer plugin loaded.");

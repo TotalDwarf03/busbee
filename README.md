@@ -32,6 +32,7 @@ For information on the datasets used in this project, please refer to the `READM
 Unfortunately, a few changes have been made to the project in order to get it working on the USW student webserver. These changes are noted below:
 
 - **File Types:** The student webserver has restrictions on certain file types, geojson files in particular. To work around this, all geojson files have been converted to standard `.json` files.
+- **Leaflet TrackPlayer Plugin:** The Leaflet TrackPlayer plugin used in this project makes use of a `.cjs` file, which is not supported by the student webserver. To resolve this, the plugin has been modified to use a standard `.js` file instead.
 
 ## Linting and Formatting
 
